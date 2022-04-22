@@ -1,0 +1,118 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+/* Oldal tetején lévő szöveg + táblázat */
+
+.kezdo-szoveg, .motivalo-tabla {
+    color: beige;
+    font-family: "Century Gothic", serif;
+    text-align: center;
+}
+
+.kezdo-szoveg h1 {
+    margin-bottom: 15px;
+}
+
+.kezdo-szoveg h2 {
+    margin-bottom: 50px;
+}
+
+caption {
+    font-size: 30px;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.motivalo-tabla table {
+    width: 100%;
+    background-color: rgb(1, 50, 32);
+    border-radius: 15px 30px 15px 30px;
+    margin-bottom: 30px;
+    padding: 10px;
+}
+
+.motivalo-tabla thead {
+    font-size: 25px;
+    line-height: 60px;
+}
+
+.motivalo-tabla tbody {
+    vertical-align: top;
+    font-size: 20px;
+}
+
+.motivalo-tabla tfoot {
+    display: table-footer-group;
+    vertical-align: middle;
+}
+
+/* Oldal második részén lévő 3 div */
+
+.hirlevel, .legnepreszerubb-uticelok, .kozossegi-media {
+    width: 32%;
+    display: inline-block;
+    text-align: left;
+    color: beige;
+    font-family: "Century Gothic", serif;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 15px 15px;
+    float: left;
+    padding: 10px;
+}
+
+.hirlevel, .legnepreszerubb-uticelok {
+    margin-right: 2%;
+}
+
+.kozossegi-media, .hirlevel, .legnepreszerubb-uticelok h3 {
+    margin-bottom: 20px;
+}
+
+.kozossegi-media p {
+    margin-bottom: 10px;
+}
+
+.kozossegi-media img {
+    width: 40px;
+}
+
+.hirlevel input[type=text], input[type=email] {
+    font-family: "Century Gothic", serif;
+    border: 3px solid beige;
+    border-radius: 4px;
+    width: 20em;
+    height: 2em;
+}
+
+.hirlevel input[type=checkbox] {
+    width: 1.2em;
+    height: 1.2em;
+}
+
+.hirlevel input[type=text]:focus, input[type=email]:focus {
+    border: 3px solid black;
+}
+
+.hirlevel input[type=submit] {
+    background-color: beige;
+    border: none;
+    color: black;
+    padding: 10px 25px;
+    margin: 2px;
+    cursor: pointer;
+    font-family: "Century Gothic", serif;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+.hirlevel input[type=submit]:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    color: beige;
+}
+
+.legnepreszerubb-uticelok table tr {
+    text-align: center;
+}

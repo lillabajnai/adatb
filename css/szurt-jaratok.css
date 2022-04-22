@@ -1,0 +1,61 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.szurt {
+    display: block;
+    text-align: left;
+    color: beige;
+    font-size: 16px;
+    font-family: "Century Gothic", serif;
+    background-color: rgb(51, 51, 51);
+    border-radius: 15px 15px;
+    padding: 10px;
+}
+
+table {
+    width: 84vw;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+    margin: auto;
+}
+
+label, select {
+    font-size: 15px;
+    font-family: "Century Gothic", serif;
+    margin-left: 10px;
+}
+
+th, td {
+    padding: 10px 15px;
+}
+
+.egy-jarat {
+    color: black;
+    background-color: beige;
+}
+
+#ertekeles, .foglalas-gomb {
+    background-color: rgb(221, 222, 233);
+    border: none;
+    color: black;
+    padding: 10px 25px;
+    margin: 2px;
+    cursor: pointer;
+    font-family: "Century Gothic", serif;
+    font-weight: bold;
+    border-radius: 5px;
+    float: right;
+}
+
+.foglalas-gomb, #szures-alapjan {
+    background-color: black;
+    color: beige;
+}
+
+#ertekeles:hover, .foglalas-gomb:hover, #szures-alapjan:hover {
+    background-color: rgb(113, 113, 113);
+    color: beige;
+}

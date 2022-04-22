@@ -1,0 +1,83 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.kereso {
+    display: block;
+    text-align: left;
+    color: beige;
+    font-family: "Century Gothic", serif;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 15px 15px;
+    padding: 10px;
+}
+
+h1 {
+    font-size: 25px;
+    margin-bottom: 30px;
+}
+
+.repjegy-tipus {
+    font-size: 20px;
+    margin: 10px;
+}
+
+.egyiranyu-repjegy, .tobb-megallos-repjegy {
+    opacity: 0;        /* ilyenkor nem látszik a div */
+    max-height: 0;
+    overflow: hidden;
+    transform: scale(0.8);
+    transition: 0.8s;
+    font-size: 20px;
+}
+
+input, select, textarea, fieldset {
+    font-family: "Century Gothic", serif;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+input[type="radio"]:checked ~ .egyiranyu-repjegy,
+input[type="radio"]:checked ~ .tobb-megallos-repjegy {
+    opacity: 1;       /* ilyenkor látszik a div */
+    max-height: 500px;
+    overflow: visible;
+}
+
+input[type="text"], input[type="date"], input[type="number"], select {
+    border: 3px solid beige;
+    border-radius: 4px;
+    width: 20em;
+    height: 3em;
+}
+
+input[type="text"]:focus, input[type="date"]:focus, input[type="number"]:focus, select:focus {
+    border: 3px solid black;
+}
+
+input[type="radio"]:checked {
+    opacity: 1;
+    max-height: 100px;
+    overflow: visible;
+    padding: 10px 20px;
+    transform: scale(1);
+}
+
+input[type="submit"] {
+    background-color: beige;
+    border: none;
+    color: black;
+    padding: 10px 25px;
+    margin: 2px;
+    cursor: pointer;
+    font-family: "Century Gothic", serif;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+input[type="submit"]:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    color: beige;
+}

@@ -1,0 +1,76 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.regisztracios-urlap {
+    width: 35vw;
+    margin: auto;
+    background-color: rgb(51, 51, 51);
+    border-radius: 15px 15px;
+    padding: 10px;
+}
+
+p {
+    font-family: "Century Gothic", serif;
+    color: indianred;
+    font-size: 15px;
+    margin: 5px;
+}
+
+label{
+    color: beige;
+    font-family: "Century Gothic", serif;
+    font-size: 18px;
+    margin: 0 10px;
+}
+
+input, select {
+    width: 14vw;
+    height: 23px;
+    margin: 5px;
+    border: 3px solid beige;
+    border-radius: 4px;
+    font-family: "Century Gothic", serif;
+    font-size: 15px;
+}
+
+select {
+    width: 10vw;
+    height: 30px;
+}
+
+.required-label::before {
+    content: "* ";
+    color: indianred;
+}
+
+input[type=file] {
+    width: 17vw;
+    height: 30px;
+}
+
+input:focus, select:focus {
+    border: 3px solid black;
+}
+
+input[type=submit], input[type=reset] {
+    width: 10vw;
+    height: 40px;
+    background-color: beige;
+    border: none;
+    color: black;
+    padding: 10px;
+    margin: 2px;
+    cursor: pointer;
+    font-size: 15px;
+    font-family: "Century Gothic", serif;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+input[type=submit]:hover, input[type=reset]:hover {
+    background-color: rgb(113, 113, 113);
+    color: beige;
+}

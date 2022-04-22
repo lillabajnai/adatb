@@ -1,0 +1,132 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+/*Választott járat menetrendje div*/
+#jarat-infok {
+    width: 85vw;
+    text-align: left;
+    color: beige;
+    font-size: 16px;
+    font-family: "Century Gothic", serif;
+    background-color: rgb(51, 51, 51);
+    border-radius: 15px 15px;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+#jarat-infok table {
+    width: 84vw;
+    border-collapse: collapse;
+}
+
+#jarat-infok caption {
+    font-size: 23px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+#jarat-infok td {
+    background-color: beige;
+    color: black;
+}
+
+/*Utas adatainak, számlázási adatainak, fizetési módjának űrlapja*/
+
+.jarat-adatok {
+    width: 85vw;
+    text-align: left;
+    color: beige;
+    font-size: 16px;
+    font-family: "Century Gothic", serif;
+    background-color: rgb(51, 51, 51);
+    border-radius: 15px 15px;
+    padding: 10px;
+}
+
+.poggyasz-tabla, #fizetes-tabla {
+    width: 83vw;
+    border-collapse: collapse;
+    border-spacing: 0 10px;
+    margin: auto;
+    border: 1px solid black;
+}
+
+#repjegy-dijtetelei {
+    border-collapse: collapse;
+    border-spacing: 0 10px;
+    border: 1px solid black;
+    margin-bottom: 15px;
+}
+
+#szabaly-checkbox input[type=checkbox] {
+    margin-bottom: 15px;
+}
+
+#jarat-adatok caption {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 10px;
+    text-align: left;
+}
+
+#jarat-adatok fieldset {
+    margin: 20px 0;
+}
+
+#jarat-adatok legend {
+    font-size: 18px;
+    margin: 10px;
+}
+
+#jarat-adatok label {
+    font-size: 15px;
+    font-family: "Century Gothic", serif;
+    margin: 10px;
+}
+
+#jarat-adatok select, input {
+    font-family: "Century Gothic", serif;
+    margin: 5px;
+}
+
+#jarat-adatok th, td {
+    padding: 10px 20px;
+    border: 1px solid black;
+}
+
+input[type=text], select {
+    font-family: "Century Gothic", serif;
+    border: 3px solid beige;
+    border-radius: 4px;
+    width: 20em;
+    height: 2em;
+}
+
+input[type=text]:focus {
+    border: 3px solid black;
+}
+
+.required-label::before {
+    content: "* ";
+    color: indianred;
+}
+
+input[type=submit], button[type=submit] {
+    background-color: beige;
+    border: none;
+    color: black;
+    padding: 10px 25px;
+    margin: 2px;
+    cursor: pointer;
+    font-family: "Century Gothic", serif;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+input[type=submit]:hover, button[type=submit]:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    color: beige;
+}
