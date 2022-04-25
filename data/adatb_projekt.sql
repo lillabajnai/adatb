@@ -294,123 +294,324 @@ BEGIN
 END;
 /
 
+DROP TABLE BIZTOSITO_LOG;
+DROP TABLE BIZTOSITAS_LOG;
+DROP TABLE UTAS_LOG;
+DROP TABLE LEGITARSASAG_LOG;
+DROP TABLE JARAT_LOG;
+DROP TABLE JEGY_LOG;
+DROP TABLE BIZTOSITAS_KATEGORIAK_LOG;
+DROP TABLE ERTEKEL_LOG;
+
+CREATE TABLE BIZTOSITO_LOG (datum DATE, leiras VARCHAR2(400));
+CREATE TABLE BIZTOSITAS_LOG (datum DATE, leiras VARCHAR2(400));
+CREATE TABLE UTAS_LOG (datum DATE, leiras VARCHAR2(400));
+CREATE TABLE LEGITARSASAG_LOG (datum DATE, leiras VARCHAR2(400));
+CREATE TABLE JARAT_LOG (datum DATE, leiras VARCHAR2(400));
+CREATE TABLE JEGY_LOG (datum DATE, leiras VARCHAR2(400));
+CREATE TABLE BIZTOSITAS_KATEGORIAK_LOG (datum DATE, leiras VARCHAR2(400));
+CREATE TABLE ERTEKEL_LOG (datum DATE, leiras VARCHAR2(400));
+
 
 --módosításra figyelmeztető triggerek
-CREATE OR REPLACE TRIGGER BIZTOSITAS_ACTION
-AFTER INSERT OR UPDATE OR DELETE ON BIZTOSITAS
+
+CREATE OR REPLACE TRIGGER BIZTOSITO_LOG_TR
+AFTER INSERT OR UPDATE OR DELETE
+ON BIZTOSITO
+FOR EACH ROW
 DECLARE
+     id_v NUMBER(4);
+     action_v VARCHAR2(20);
+     change_v VARCHAR2(400);
 BEGIN
-     IF INSERTING THEN
-          DBMS_OUTPUT.PUT_LINE('Biztosítás(ok)hozzáadva.');
+    IF INSERTING THEN
+        action_v := 'Hozzáadva';
+        id_v := :NEW.id;
+        change_v := '';
      ELSIF UPDATING THEN
-          DBMS_OUTPUT.PUT_LINE('Biztosítás(ok)frissítve.');
-     ELSIF DELETING THEN
-          DBMS_OUTPUT.PUT_LINE('Biztosítás(ok) törölve.');
-     END IF;
+        action_v := 'Frissítve';
+        id_v := :NEW.id;
+        change_v := ': ';
+        IF NVL(:OLD.id, -1) != NVL(:NEW.id, -1) THEN
+             change_v := change_v || 'ID';
+        END IF;
+        IF NVL(:OLD.leiras, '-null-') != NVL(:NEW.leiras, '-null-') THEN
+              change_v := change_v || 'LEIRAS';
+        END IF;
+   ELSIF DELETING THEN
+        action_v := 'Törölve';
+        id_v := :OLD.id;
+        change_v := '';
+   END IF;
+   INSERT INTO biztosito_log VALUES (SYSDATE, action_v || ' ' || id_v || ' számú bíztosító ' ||  change_v);
 END;
 /
 
-
-CREATE OR REPLACE TRIGGER BIZTOSITAS_KATEGORIAK_ACTION
-AFTER INSERT OR UPDATE OR DELETE ON BIZTOSITAS_KATEGORIAK
+CREATE OR REPLACE TRIGGER BIZTOSITAS_LOG_TR
+AFTER INSERT OR UPDATE OR DELETE
+ON BIZTOSITAS
+FOR EACH ROW
 DECLARE
+     id_v NUMBER(4);
+     action_v VARCHAR2(20);
+     change_v VARCHAR2(400);
 BEGIN
-     IF INSERTING THEN
-          DBMS_OUTPUT.PUT_LINE('Biztosítás kategória hozzáadva.');
+    IF INSERTING THEN
+        action_v := 'Hozzáadva';
+        id_v := :NEW.id;
+        change_v := '';
      ELSIF UPDATING THEN
-          DBMS_OUTPUT.PUT_LINE('Biztosítás kategória frissítve.');
-     ELSIF DELETING THEN
-          DBMS_OUTPUT.PUT_LINE('Biztosítás kategória törölve.');
-     END IF;
+        action_v := 'Frissítve';
+        id_v := :NEW.id;
+        change_v := ': ';
+        IF NVL(:OLD.id, -1) != NVL(:NEW.id, -1) THEN
+             change_v := change_v || 'ID';
+        END IF;
+        IF NVL(:OLD.AR, -1) != NVL(:NEW.AR, -1) THEN
+              change_v := change_v || 'AR';
+        END IF;
+        IF NVL(:OLD.DATUM, '-null-') != NVL(:NEW.DATUM, '-null-') THEN
+              change_v := change_v || 'DATUM';
+        END IF;
+        IF NVL(:OLD.BIZTOSITOID, -1) != NVL(:NEW.BIZTOSITOID, -1) THEN
+              change_v := change_v || 'BIZTOSITOID';
+        END IF;
+   ELSIF DELETING THEN
+        action_v := 'Törölve';
+        id_v := :OLD.id;
+        change_v := '';
+   END IF;
+   INSERT INTO BIZTOSITAS_LOG VALUES (SYSDATE, action_v || ' ' || id_v || ' számú bíztosítás ' ||  change_v);
 END;
 /
 
-
-CREATE OR REPLACE TRIGGER BIZTOSITO_ACTION
-AFTER INSERT OR UPDATE OR DELETE ON BIZTOSITO
+CREATE OR REPLACE TRIGGER UTAS_LOG_TR
+AFTER INSERT OR UPDATE OR DELETE
+ON UTAS
+FOR EACH ROW
 DECLARE
+     id_v NUMBER(4);
+     action_v VARCHAR2(20);
+     change_v VARCHAR2(400);
 BEGIN
-     IF INSERTING THEN
-          DBMS_OUTPUT.PUT_LINE('Biztosító(k) hozzáadva.');
+    IF INSERTING THEN
+        action_v := 'Hozzáadva';
+        id_v := :NEW.FELHASZNALONEV;
+        change_v := '';
      ELSIF UPDATING THEN
-          DBMS_OUTPUT.PUT_LINE('Biztosító(k) frissítve.');
-     ELSIF DELETING THEN
-          DBMS_OUTPUT.PUT_LINE('Biztosító(k) törölve.');
-     END IF;
+        action_v := 'Frissítve';
+        id_v := :NEW.FELHASZNALONEV;
+        change_v := ': ';
+        IF NVL(:OLD.FELHASZNALONEV, '-null-') != NVL(:NEW.FELHASZNALONEV, '-null-') THEN
+             change_v := change_v || 'FELHASZNALONEV';
+        END IF;
+        IF NVL(:OLD.EMAIL, '-null-') != NVL(:NEW.EMAIL, '-null-') THEN
+              change_v := change_v || 'EMAIL';
+        END IF;
+        IF NVL(:OLD.JELSZO, '-null-') != NVL(:NEW.JELSZO, '-null-') THEN
+              change_v := change_v || 'JELSZO';
+        END IF;
+        IF NVL(:OLD.BIZTOSITASID, -1) != NVL(:NEW.BIZTOSITASID, -1) THEN
+              change_v := change_v || 'BIZTOSITASID';
+        END IF;
+   ELSIF DELETING THEN
+        action_v := 'Törölve';
+        id_v := :OLD.FELHASZNALONEV;
+        change_v := '';
+   END IF;
+   INSERT INTO UTAS_LOG VALUES (SYSDATE, action_v || ' ' || id_v || ' nevű felhasználó ' ||  change_v);
 END;
 /
 
-
-CREATE OR REPLACE TRIGGER ERTEKEL_ACTION
-AFTER INSERT OR UPDATE OR DELETE ON ERTEKEL
+CREATE OR REPLACE TRIGGER LEGITARSASAG_LOG_TR
+AFTER INSERT OR UPDATE OR DELETE
+ON LEGITARSASAG
+FOR EACH ROW
 DECLARE
+     id_v NUMBER(4);
+     action_v VARCHAR2(20);
+     change_v VARCHAR2(400);
 BEGIN
-     IF INSERTING THEN
-          DBMS_OUTPUT.PUT_LINE('Értékelés(ek) hozzáadva.');
+    IF INSERTING THEN
+        action_v := 'Hozzáadva';
+        id_v := :NEW.NEVE;
+        change_v := '';
      ELSIF UPDATING THEN
-          DBMS_OUTPUT.PUT_LINE('Értékelés(ek) frissítve.');
-     ELSIF DELETING THEN
-          DBMS_OUTPUT.PUT_LINE('Értékelés(ek) törölve.');
-     END IF;
+        action_v := 'Frissítve';
+        id_v := :NEW.NEVE;
+        change_v := ': ';
+        IF NVL(:OLD.NEVE, '-null-') != NVL(:NEW.NEVE, '-null-') THEN
+              change_v := change_v || 'NEVE';
+        END IF;
+        IF NVL(:OLD.TULAJDONOS, '-null-') != NVL(:NEW.TULAJDONOS, '-null-') THEN
+              change_v := change_v || 'TULAJDONOS';
+        END IF;
+        IF NVL(:OLD.TELEPHELY, '-null-') != NVL(:NEW.TELEPHELY, '-null-') THEN
+              change_v := change_v || 'TELEPHELY';
+        END IF;
+   ELSIF DELETING THEN
+        action_v := 'Törölve';
+        id_v := :OLD.NEVE;
+        change_v := '';
+   END IF;
+   INSERT INTO LEGITARSASAG_LOG VALUES (SYSDATE, action_v || ' ' || id_v || ' nevű légitársaság ' ||  change_v);
 END;
 /
 
-
-CREATE OR REPLACE TRIGGER JARAT_ACTION
-AFTER INSERT OR UPDATE OR DELETE ON JARAT
+CREATE OR REPLACE TRIGGER JARAT_LOG_TR
+AFTER INSERT OR UPDATE OR DELETE
+ON JARAT
+FOR EACH ROW
 DECLARE
+     id_v NUMBER(4);
+     action_v VARCHAR2(20);
+     change_v VARCHAR2(400);
 BEGIN
-     IF INSERTING THEN
-          DBMS_OUTPUT.PUT_LINE('Járat(ok) hozzáadva.');
+    IF INSERTING THEN
+        action_v := 'Hozzáadva';
+        id_v := :NEW.JARATSZAM;
+        change_v := '';
      ELSIF UPDATING THEN
-          DBMS_OUTPUT.PUT_LINE('Járat(ok) frissítve.');
-     ELSIF DELETING THEN
-          DBMS_OUTPUT.PUT_LINE('Járat(ok) törölve.');
-     END IF;
+        action_v := 'Frissítve';
+        id_v := :NEW.JARATSZAM;
+        change_v := ': ';
+        IF NVL(:OLD.JARATSZAM, -1) != NVL(:NEW.JARATSZAM, -1) THEN
+             change_v := change_v || 'JARATSZAM';
+        END IF;
+        IF NVL(:OLD.ETKEZES, -1) != NVL(:NEW.ETKEZES, -1) THEN
+             change_v := change_v || 'ETKEZES';
+        END IF;
+        IF NVL(:OLD.SZABAD_HELY, -1) != NVL(:NEW.SZABAD_HELY, -1) THEN
+             change_v := change_v || 'SZABAD_HELY';
+        END IF;
+        IF NVL(:OLD.TOBBMEGALLOS, -1) != NVL(:NEW.TOBBMEGALLOS, -1) THEN
+             change_v := change_v || 'TOBBMEGALLOS';
+        END IF;
+        IF NVL(:OLD.INDULAS, '-null-') != NVL(:NEW.INDULAS, '-null-') THEN
+             change_v := change_v || 'INDULAS';
+        END IF;
+        IF NVL(:OLD.ERKEZES,'-null-') != NVL(:NEW.ERKEZES, '-null-') THEN
+             change_v := change_v || 'ERKEZES';
+        END IF;
+        IF NVL(:OLD.HONNAN, '-null-') != NVL(:NEW.HONNAN, '-null-') THEN
+              change_v := change_v || 'HONNAN';
+        END IF;
+        IF NVL(:OLD.HOVA, '-null-') != NVL(:NEW.HOVA, '-null-') THEN
+              change_v := change_v || 'HOVA';
+        END IF;
+        IF NVL(:OLD.LEGITARSASAG, '-null-') != NVL(:NEW.LEGITARSASAG, '-null-') THEN
+              change_v := change_v || 'LEGITARSASAG';
+        END IF;
+   ELSIF DELETING THEN
+        action_v := 'Törölve';
+        id_v := :OLD.JARATSZAM;
+        change_v := '';
+   END IF;
+   INSERT INTO JARAT_LOG VALUES (SYSDATE, action_v || ' ' || id_v || ' számú járat ' ||  change_v);
 END;
 /
 
-
-CREATE OR REPLACE TRIGGER JEGY_ACTION
-AFTER INSERT OR UPDATE OR DELETE ON JEGY
+CREATE OR REPLACE TRIGGER JEGY_LOG_TR
+AFTER INSERT OR UPDATE OR DELETE
+ON JEGY
+FOR EACH ROW
 DECLARE
+     id_v NUMBER(4);
+     action_v VARCHAR2(20);
+     change_v VARCHAR2(400);
 BEGIN
-     IF INSERTING THEN
-          DBMS_OUTPUT.PUT_LINE('Jegy(ek) hozzáadva.');
+    IF INSERTING THEN
+        action_v := 'Hozzáadva';
+        id_v := :NEW.id;
+        change_v := '';
      ELSIF UPDATING THEN
-          DBMS_OUTPUT.PUT_LINE('Jegy(ek) frissítve.');
-     ELSIF DELETING THEN
-          DBMS_OUTPUT.PUT_LINE('Jegy(ek) törölve.');
-     END IF;
+        action_v := 'Frissítve';
+        id_v := :NEW.id;
+        change_v := ': ';
+        IF NVL(:OLD.id, -1) != NVL(:NEW.id, -1) THEN
+             change_v := change_v || 'ID';
+        END IF;
+        IF NVL(:OLD.AR, -1) != NVL(:NEW.AR, -1) THEN
+              change_v := change_v || 'AR';
+        END IF;
+        IF NVL(:OLD.FELHASZNALONEV, '-null-') != NVL(:NEW.FELHASZNALONEV, '-null-') THEN
+             change_v := change_v || 'FELHASZNALONEV';
+        END IF;
+        IF NVL(:OLD.JARATSZAM, -1) != NVL(:NEW.JARATSZAM, -1) THEN
+             change_v := change_v || 'JARATSZAM';
+        END IF;
+   ELSIF DELETING THEN
+        action_v := 'Törölve';
+        id_v := :OLD.id;
+        change_v := '';
+   END IF;
+   INSERT INTO JEGY_LOG VALUES (SYSDATE, action_v || ' ' || id_v || ' számú jegy ' ||  change_v);
 END;
 /
 
-
-CREATE OR REPLACE TRIGGER LEGITARSASAG_ACTION
-AFTER INSERT OR UPDATE OR DELETE ON LEGITARSASAG
+CREATE OR REPLACE TRIGGER BIZTOSITAS_KATEGORIAK_LOG_TR
+AFTER INSERT OR UPDATE OR DELETE
+ON BIZTOSITAS_KATEGORIAK
+FOR EACH ROW
 DECLARE
+     id_v NUMBER(4);
+     action_v VARCHAR2(20);
+     change_v VARCHAR2(400);
 BEGIN
-     IF INSERTING THEN
-          DBMS_OUTPUT.PUT_LINE('Légitársaság(ok) hozzáadva.');
+    IF INSERTING THEN
+        action_v := 'Hozzáadva';
+        id_v := :NEW.id;
+        change_v := '';
      ELSIF UPDATING THEN
-          DBMS_OUTPUT.PUT_LINE('Légitársaság(ok) frissítve.');
-     ELSIF DELETING THEN
-          DBMS_OUTPUT.PUT_LINE('Légitársaság(ok) törölve.');
-     END IF;
+        action_v := 'Frissítve';
+        id_v := :NEW.id;
+        change_v := ': ';
+        IF NVL(:OLD.id, -1) != NVL(:NEW.id, -1) THEN
+             change_v := change_v || 'ID';
+        END IF;
+        IF NVL(:OLD.KATEGORIA, '-null-') != NVL(:NEW.KATEGORIA, '-null-') THEN
+              change_v := change_v || 'KATEGORIA';
+        END IF;
+   ELSIF DELETING THEN
+        action_v := 'Törölve';
+        id_v := :OLD.id;
+        change_v := '';
+   END IF;
+   INSERT INTO BIZTOSITAS_KATEGORIAK_LOG VALUES (SYSDATE, action_v || ' ' || id_v || ' számú bíztosítás ' ||  change_v);
 END;
 /
 
-
-CREATE OR REPLACE TRIGGER UTAS_ACTION
-AFTER INSERT OR UPDATE OR DELETE ON UTAS
+CREATE OR REPLACE TRIGGER ERTEKEL_LOG_TR
+AFTER INSERT OR UPDATE OR DELETE
+ON ERTEKEL
+FOR EACH ROW
 DECLARE
+     id_v NUMBER(4);
+     action_v VARCHAR2(20);
+     change_v VARCHAR2(400);
 BEGIN
-     IF INSERTING THEN
-          DBMS_OUTPUT.PUT_LINE('Utas(ok)hozzáadva.');
+    IF INSERTING THEN
+        action_v := 'Hozzáadva';
+        id_v := :NEW.FELHASZNALONEV;
+        change_v := '';
      ELSIF UPDATING THEN
-          DBMS_OUTPUT.PUT_LINE('Utas(ok)frissítve.');
-     ELSIF DELETING THEN
-          DBMS_OUTPUT.PUT_LINE('Utas(ok) törölve.');
-     END IF;
+        action_v := 'Frissítve';
+        id_v := :NEW.FELHASZNALONEV;
+        change_v := ': ';
+        IF NVL(:OLD.FELHASZNALONEV, '-null-') != NVL(:NEW.FELHASZNALONEV, '-null-') THEN
+             change_v := change_v || 'FELHASZNALONEV';
+        END IF;
+        IF NVL(:OLD.ERTEKELES, -1) != NVL(:NEW.ERTEKELES, -1) THEN
+              change_v := change_v || 'ERTEKELES';
+        END IF;
+        IF NVL(:OLD.LEGITARSASAG, '-null-') != NVL(:NEW.LEGITARSASAG,'-null-') THEN
+              change_v := change_v || 'LEGITARSASAG';
+        END IF;
+   ELSIF DELETING THEN
+        action_v := 'Törölve';
+        id_v := :OLD.FELHASZNALONEV;
+        change_v := '';
+   END IF;
+   INSERT INTO ERTEKEL_LOG VALUES (SYSDATE, action_v || ' ' || id_v || ' számú bíztosítás ' ||  change_v);
 END;
 /
