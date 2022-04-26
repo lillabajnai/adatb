@@ -554,17 +554,20 @@ AFTER INSERT OR UPDATE OR DELETE
 ON BIZTOSITAS_KATEGORIAK
 FOR EACH ROW
 DECLARE
-     id_v NUMBER(4);
+     id1_v NUMBER(4);
+     id2_v VARCHAR2(30);
      action_v VARCHAR2(20);
      change_v VARCHAR2(400);
 BEGIN
     IF INSERTING THEN
         action_v := 'Hozzáadva';
-        id_v := :NEW.id;
+        id1_v := :NEW.id;
+        id2_v := :NEW.kategoria;
         change_v := '';
      ELSIF UPDATING THEN
         action_v := 'Frissítve';
-        id_v := :NEW.id;
+        id1_v := :NEW.id;
+        id2_v := :NEW.kategoria;
         change_v := ': ';
         IF NVL(:OLD.id, -1) != NVL(:NEW.id, -1) THEN
              change_v := change_v || 'ID';
@@ -574,10 +577,11 @@ BEGIN
         END IF;
    ELSIF DELETING THEN
         action_v := 'Törölve';
-        id_v := :OLD.id;
+        id1_v := :OLD.id;
+        id2_v := :OLD.kategoria;
         change_v := '';
    END IF;
-   INSERT INTO BIZTOSITAS_KATEGORIAK_LOG VALUES (SYSDATE, action_v || ' ' || id_v || ' számú bíztosítás ' ||  change_v);
+   INSERT INTO BIZTOSITAS_KATEGORIAK_LOG VALUES (SYSDATE, action_v || ' ' || id1_v ||  '/' || id2_v || ' számú bíztosítás kategória ' ||  change_v);
 END;
 /
 
@@ -586,17 +590,20 @@ AFTER INSERT OR UPDATE OR DELETE
 ON ERTEKEL
 FOR EACH ROW
 DECLARE
-     id_v NUMBER(4);
+     id1_v VARCHAR2(30);
+     id2_v VARCHAR2(30);
      action_v VARCHAR2(20);
      change_v VARCHAR2(400);
 BEGIN
     IF INSERTING THEN
         action_v := 'Hozzáadva';
-        id_v := :NEW.FELHASZNALONEV;
+        id1_v := :NEW.FELHASZNALONEV;
+        id2_v := :NEW.LEGITARSASAG;
         change_v := '';
      ELSIF UPDATING THEN
         action_v := 'Frissítve';
-        id_v := :NEW.FELHASZNALONEV;
+        id1_v := :NEW.FELHASZNALONEV;
+        id2_v := :NEW.LEGITARSASAG;
         change_v := ': ';
         IF NVL(:OLD.FELHASZNALONEV, '-null-') != NVL(:NEW.FELHASZNALONEV, '-null-') THEN
              change_v := change_v || 'FELHASZNALONEV';
@@ -609,9 +616,10 @@ BEGIN
         END IF;
    ELSIF DELETING THEN
         action_v := 'Törölve';
-        id_v := :OLD.FELHASZNALONEV;
+        id1_v := :OLD.FELHASZNALONEV;
+        id2_v := :OLD.LEGITARSASAG;
         change_v := '';
    END IF;
-   INSERT INTO ERTEKEL_LOG VALUES (SYSDATE, action_v || ' ' || id_v || ' számú bíztosítás ' ||  change_v);
+   INSERT INTO ERTEKEL_LOG VALUES (SYSDATE, action_v || ' ' || id1_v ||  '/' || id2_v ||  ' számú értékelés ' ||  change_v);
 END;
 /
