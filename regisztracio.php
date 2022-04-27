@@ -32,7 +32,7 @@ if(isset($_POST['regisztracio'])) {
     if (count($errors) === 0) {
         $jelszo = password_hash($jelszo, PASSWORD_DEFAULT);
         $ujUtas = oci_parse($utazasiiroda, "INSERT INTO UTAS  (FELHASZNALONEV, EMAIL, JELSZO) VALUES ('$felhasznalonev','$email','$jelszo')");
-        oci_execute($ujUtas);
+        oci_execute($ujUtas) or die('Hiba');
         header("Location: bejelentkezes.php?reg=true");
     }
 }

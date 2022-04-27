@@ -97,7 +97,7 @@ function kereses($kiindulasiHely, $erkezesiHely, $datum, $legitarsasag, $melyik)
         $datum = empty($datum) === true ? '%' : $datum;
         $legitarsasag = empty($legitarsasag) === true ? '%' : $legitarsasag;
 
-        $egyiranyu_kereses = "SELECT JARATSZAM, HONNAN, HOVA, TO_CHAR(INDULAS,'YYYY.MM.DD. HH:MI') AS INDULAS, TO_CHAR(ERKEZES,'YYYY.MM.DD. HH:MI') AS ERKEZES, LEGITARSASAG.NEVE, TOBBMEGALLOS, SZABAD_HELY FROM JARAT, LEGITARSASAG 
+        $egyiranyu_kereses = "SELECT JARATSZAM, HONNAN, HOVA, TO_CHAR(INDULAS,'YYYY.MM.DD. HH:MI') AS INDULAS, TO_CHAR(ERKEZES,'YYYY.MM.DD. HH:MI') AS ERKEZES, LEGITARSASAG.NEVE, AR, TOBBMEGALLOS, SZABAD_HELY FROM JARAT, LEGITARSASAG 
                                         WHERE JARAT.LEGITARSASAG=LEGITARSASAG.NEVE AND TOBBMEGALLOS=0 AND SZABAD_HELY > 0 AND HONNAN LIKE '$kiindulasiHely' 
                                         AND HOVA LIKE '$erkezesiHely' AND INDULAS LIKE '$datum' AND LEGITARSASAG.NEVE LIKE '$legitarsasag'";
 
@@ -108,7 +108,7 @@ function kereses($kiindulasiHely, $erkezesiHely, $datum, $legitarsasag, $melyik)
         $datum = empty($datum) === true ? '%' : $datum;
         $legitarsasag = empty($legitarsasag) === true ? '%' : $legitarsasag;
 
-        $tobbmegallos_kereses = "SELECT JARATSZAM, HONNAN, HOVA, TO_CHAR(INDULAS,'YYYY.MM.DD. HH:MI') AS INDULAS, TO_CHAR(ERKEZES,'YYYY.MM.DD. HH:MI') AS ERKEZES, LEGITARSASAG.NEVE, TOBBMEGALLOS FROM JARAT, LEGITARSASAG 
+        $tobbmegallos_kereses = "SELECT JARATSZAM, HONNAN, HOVA, TO_CHAR(INDULAS,'YYYY.MM.DD. HH:MI') AS INDULAS, TO_CHAR(ERKEZES,'YYYY.MM.DD. HH:MI') AS ERKEZES, LEGITARSASAG.NEVE, AR, TOBBMEGALLOS FROM JARAT, LEGITARSASAG 
                                         WHERE JARAT.LEGITARSASAG=LEGITARSASAG.NEVE AND TOBBMEGALLOS NOT LIKE 0 AND SZABAD_HELY > 0 AND HONNAN LIKE '$kiindulasiHely' 
                                         AND HOVA LIKE '$erkezesiHely' AND INDULAS LIKE '$datum' AND LEGITARSASAG.NEVE LIKE '$legitarsasag'";
 
@@ -131,20 +131,6 @@ function utasAdatok($tipus, $utas_szam) {
         echo '<label class="required-label">Vezetéknév:<input type="text" placeholder="Vezetéknév" required></label>';
         echo '<label class="required-label">Keresztnév:</label><input type="text" placeholder="Keresztnév" required> <br/>';
         echo '<label class="required-label">Születési dátum:</label><input type="date" required>';
-
-//        echo '<table class="biztositas-tabla">';
-//        echo '<caption>Biztosítás a teljes útra</caption>';
-//        $poggyasz = mysqli_query($utazasiiroda, "SELECT * FROM POGGYASZ") or die ("Hibás utasítás!");
-//        while(($current_row = mysqli_fetch_assoc($poggyasz))!= null) {
-//            echo '<tr>';
-//            echo '<th>';
-//            echo '<label><input type="radio"' . " value='" . $current_row["ID"] . "'" . " name='" . "poggyasz-reszletek-" . $tipus. '-' . $i . "'" . ($current_row["ID"] == "1" ? ' checked' : '') . ">" .
-//                $current_row["MEGNEVEZES"] . '</label>';
-//            echo '</th>';
-//            echo '<td>' . '+ ' . number_format($current_row['AR']) . ' Ft' . '</td>';
-//            echo '</tr>';
-//        }
-
         echo '<tr>';
         echo '<th>';
         echo '<label><input type="checkbox" name="etkezes-' . $tipus. '-' . $i . '" value="etkezes" checked>Étkezés</label>';
@@ -172,63 +158,6 @@ function repulojegyAra($jaratszam): int {
     oci_free_statement($repjegy_ar_lekerdezes);
     csatlakozas_zarasa($utazasiiroda);
     return $repjegy_ara;
-}
-
-function poggyaszAra($poggyaszid): int {
-    include_once('common/connection.php');
-    $utazasiiroda = csatlakozas();
-
-    $poggyasz_megnevezes='';
-    $poggyasz_ara='0';
-    $poggyasz_lekerdezes = oci_parse($utazasiiroda, "SELECT MEGNEVEZES, AR FROM POGGYASZ WHERE ID = '$poggyaszid'") or die ('Hibás utasítás!');
-    oci_execute($poggyasz_lekerdezes);
-    while($current_row = oci_fetch_array($poggyasz_lekerdezes, OCI_ASSOC + OCI_RETURN_NULLS)) {
-        $poggyasz_megnevezes =  $current_row['MEGNEVEZES'];
-        $poggyasz_ara = $current_row["AR"];
-    }
-    echo '<tr>';
-        echo '<th>' . $poggyasz_megnevezes . '</th>';
-        echo '<td>1 x ' . number_format($poggyasz_ara) . ' Ft</td>';
-    echo '</tr>';
-
-    if(isset($poggyasz_lekerdezes) && is_resource($poggyasz_lekerdezes)) {
-        oci_free_statement($poggyasz_lekerdezes);
-    }
-
-    csatlakozas_zarasa($utazasiiroda);
-    return $poggyasz_ara;
-}
-
-function profilkepFeltoltese(array &$errors, string $felhasznalonev) {
-    if (isset($_FILES["profil-kep"]) && is_uploaded_file($_FILES["profil-kep"]["tmp_name"])) {
-
-        if ($_FILES["profil-kep"]["error"] !== 0) {
-            $errors[] = "Hiba történt a fájlfeltöltés során!";
-        }
-
-        $engedelyezettKiterjesztesek = ["png", "jpg"];
-
-        $kiterjesztes = strtolower(pathinfo($_FILES["profil-kep"]["name"], PATHINFO_EXTENSION));
-
-        if (!in_array($kiterjesztes, $engedelyezettKiterjesztesek)) {
-            $errors[] = "A profilkép kiterjesztése hibás! Engedélyezett formátumok: " .
-                implode(", ", $engedelyezettKiterjesztesek) . "!";
-        }
-
-        if ($_FILES["profil-kep"]["size"] > 5242880) {
-            $errors[] = "A fájl mérete túl nagy!";
-        }
-
-        if (count($errors) === 0) {
-            $utvonal = "img/profil-kepek/$felhasznalonev.$kiterjesztes";
-            $flag = move_uploaded_file($_FILES["profil-kep"]["tmp_name"], $utvonal);
-
-
-            if (!$flag) {
-                $errors[] = "A profilkép elmentése nem sikerült!";
-            }
-        }
-    }
 }
 
 function foglalasokListazasa($felhasznalonev) {

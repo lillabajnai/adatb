@@ -66,6 +66,7 @@ if(isset($_POST['tobbmegallos-kereses'])) {
                         <th id="indulasi-ido">Indulási idő</th>
                         <th id="erkezesi-ido">Érkezési idő</th>
                         <th id="legitarsasag">Légitársaság</th>
+                        <th id="ar">Ár (HUF)</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -79,6 +80,7 @@ if(isset($_POST['tobbmegallos-kereses'])) {
                                 echo '<td headers="indulasi-ido">' . $current_row["INDULAS"] . '</td>';
                                 echo '<td headers="erkezesi-ido">' . $current_row["ERKEZES"] . '</td>';
                                 echo '<td headers="legitarsasag">' . $current_row["NEVE"] . '</td>';
+                                echo '<td headers="ar">' . number_format($current_row["AR"]) . '</td>';
                                 echo '<td><form action="jegyfoglalas_foglalas.php" method="POST">';
                                 echo '<input type="hidden" name="post-jaratszam-egy" value=' . $current_row["JARATSZAM"] . '>';
                                 echo '<input type="hidden" name="post-felnott-egy" value=' . $felnott . '>';
@@ -95,6 +97,7 @@ if(isset($_POST['tobbmegallos-kereses'])) {
                             echo '<td headers="indulasi-ido">' . $current_row["INDULAS"] . '</td>';
                             echo '<td headers="erkezesi-ido">' . $current_row["ERKEZES"] . '</td>';
                             echo '<td headers="legitarsasag">' . $current_row["NEVE"] . '</td>';
+                            echo '<td headers="ar">' . number_format($current_row["AR"]) . '</td>';
                             echo '<td><form action="jegyfoglalas_foglalas.php" method="POST">';
                             echo '<input type="hidden" name="post-jaratszam-tobb" value=' . $current_row["JARATSZAM"] . '>';
                             echo '<input type="hidden" name="post-felnott-tobb" value=' . $felnott . '>';
