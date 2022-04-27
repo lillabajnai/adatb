@@ -13,7 +13,7 @@ function menuGeneralas(string $aktualisOldal) {
         (isset($_SESSION['user']) === true ? '<li><a href="profil.php">Profil</a></li>' : '<li><a href="bejelentkezes.php">Bejelentkezés/Regisztráció</a></li>') .
         "</li>" .
         (isset($_SESSION['user']) === true ? '<li><a href="logout.php">Kijelentkezés</a></li>' : '') .
-        (isset($_SESSION['user']) === true && $_SESSION['user']['felhasznalonev'] === 'admin' ? "<li" . ($aktualisOldal === "admin" ? ' class=active' : "") . '><a href="admin.php">Admin</a></li>' : '') .
+        (isset($_SESSION['user']) === true && $_SESSION['user']['felhasznalonev'] === 'admin' ? "<li" . ($aktualisOldal === "admin" ? ' class=active' : "") . '><a href="admin_statisztika.php">Admin</a></li>' : '') .
         "</ul></div></nav>";
 }
 
@@ -202,3 +202,16 @@ function ertekelesekListazasa($felhasznalonev) {
     csatlakozas_zarasa($utazasiiroda);
 }
 
+function alMenuGeneralas(string $aktualisOldal) {
+    echo "<ul>" .
+        "<li>" .
+        "<a href='admin_statisztika.php'" . ($aktualisOldal === "statisztika" ? ' class=active' : "") . ">Statisztika</a>" .
+        "</li>" .
+        "<li>" .
+        "<a href='admin_rekordok.php'" . ($aktualisOldal === "rekordok" ? ' class=active' : "") . ">Rekordok</a>" .
+        "</li>" .
+        "<li>" .
+        "<a href='admin_naplozas.php'" . ($aktualisOldal === "naplozas" ? ' class=active' : "") . ">Naplózás</a>" .
+        "</li>" .
+        "</ul>";
+}
