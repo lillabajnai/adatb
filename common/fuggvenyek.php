@@ -79,8 +79,8 @@ function ertekel($felhasznalonev, $legitarsasag_id, $ertekeles) {
     include_once('common/connection.php');
     $utazasiiroda = csatlakozas();
 
-    $sysdate = date('Y-m-d H:i:s');
-    $ertekeles = mysqli_query($utazasiiroda, "INSERT INTO ERTEKEL VALUES (NULL, '$felhasznalonev', '$legitarsasag_id', '$ertekeles', '$sysdate')") or die ('Hibás utasítás!');
+    $ertekeles = oci_parse($utazasiiroda, "INSERT INTO ERTEKEL VALUES ('$felhasznalonev', '$legitarsasag_id', '$ertekeles')") or die ('Hibás utasítás!');
+    oci_execute($ertekeles);
     header("Location: profil.php?ertekeles=true");
 
     if(isset($ertekeles) && is_resource($ertekeles)) {

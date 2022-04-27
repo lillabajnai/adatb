@@ -151,7 +151,7 @@ $utazasiiroda = csatlakozas();
                         </fieldset>
                         <fieldset>
                             <legend>Köszönjük, hogy részt vett az értékelésben!</legend>
-                            <br/><input type="submit" id="modal-ertekeles" name="ertekeles" value="Elküld" formaction="bejelentkezve.php"/>
+                            <br/><input type="submit" id="modal-ertekeles" name="ertekeles" value="Elküld"/>
                         </fieldset>
                     </form>
                 </div>
