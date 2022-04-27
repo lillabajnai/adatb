@@ -371,7 +371,7 @@ BEGIN
         IF NVL(:OLD.AR, -1) != NVL(:NEW.AR, -1) THEN
             change_v := change_v || 'AR';
         END IF;
-        IF NVL(:OLD.DATUM, '-null-') != NVL(:NEW.DATUM, '-null-') THEN
+        IF NVL(TO_CHAR(:OLD.DATUM,'YYYY MM DD HH24:MI:SS'),'NA') != NVL(TO_CHAR(:NEW.DATUM,'YYYY MM DD HH24:MI:SS'),'NA') THEN
             change_v := change_v || 'DATUM';
         END IF;
         IF NVL(:OLD.BIZTOSITOID, -1) != NVL(:NEW.BIZTOSITOID, -1) THEN
@@ -488,10 +488,10 @@ BEGIN
         IF NVL(:OLD.TOBBMEGALLOS, -1) != NVL(:NEW.TOBBMEGALLOS, -1) THEN
             change_v := change_v || 'TOBBMEGALLOS';
         END IF;
-        IF NVL(:OLD.INDULAS, '-null-') != NVL(:NEW.INDULAS, '-null-') THEN
+       IF NVL(TO_CHAR(:OLD.INDULAS,'YYYY MM DD HH24:MI:SS'),'NA') != NVL(TO_CHAR(:NEW.INDULAS,'YYYY MM DD HH24:MI:SS'),'NA') THEN
             change_v := change_v || 'INDULAS';
         END IF;
-        IF NVL(:OLD.ERKEZES,'-null-') != NVL(:NEW.ERKEZES, '-null-') THEN
+        IF NVL(TO_CHAR(:OLD.ERKEZES,'YYYY MM DD HH24:MI:SS'),'NA') != NVL(TO_CHAR(:NEW.ERKEZES,'YYYY MM DD HH24:MI:SS'),'NA') THEN
             change_v := change_v || 'ERKEZES';
         END IF;
         IF NVL(:OLD.HONNAN, '-null-') != NVL(:NEW.HONNAN, '-null-') THEN
