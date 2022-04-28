@@ -91,30 +91,33 @@ if((!isset($_POST['post-felnott']) && !isset($_POST['foglalas']) && !isset($_POS
                     array_push($gyermekArTomb,$repjegyAra);
                 }
             }
-            // ÉTKEZÉS ÁRAK - FELNŐTT
-            $etkezes_szamlalo=0;
-            for($i = 1; $i <= $felnott; ++$i) {
-                if(isset($_POST['etkezes-felnőtt-'. $i])) {
-                    $etkezes_szamlalo++;
-                    $felnottArTomb[$i-1] += 5720;
-                }
-            }
-
-            // ÉTKEZÉS ÁRAK - GYERMEK
-            if($gyermek > 0) {
-                for ($i = 1; $i <= $gyermek; ++$i) {
-                    if(isset($_POST['etkezes-gyermek-' . $i])) {
+            $etkezes_ara = 0;
+            if(etkezes($jaratszam) === 1) {
+                // ÉTKEZÉS ÁRAK - FELNŐTT
+                $etkezes_szamlalo = 0;
+                for ($i = 1; $i <= $felnott; ++$i) {
+                    if (isset($_POST['etkezes-felnőtt-' . $i])) {
                         $etkezes_szamlalo++;
-                        $gyermekArTomb[$i-1] += 5720;
+                        $felnottArTomb[$i - 1] += 5720;
                     }
                 }
-            }
 
-            echo '<tr>';
-                echo '<th>Étkezés</th>';
-                echo '<td>' . $etkezes_szamlalo . ' x 5,720 Ft' . '</td>';
-            echo '</tr>';
-            $etkezes_ara = $etkezes_szamlalo*5720;
+                // ÉTKEZÉS ÁRAK - GYERMEK
+                if ($gyermek > 0) {
+                    for ($i = 1; $i <= $gyermek; ++$i) {
+                        if (isset($_POST['etkezes-gyermek-' . $i])) {
+                            $etkezes_szamlalo++;
+                            $gyermekArTomb[$i - 1] += 5720;
+                        }
+                    }
+                }
+
+                echo '<tr>';
+                    echo '<th>Étkezés</th>';
+                    echo '<td>' . $etkezes_szamlalo . ' x 5,720 Ft' . '</td>';
+                echo '</tr>';
+                $etkezes_ara = $etkezes_szamlalo*5720;
+            }
 
             echo '<tr>';
                 echo '<th>Kezelési költség</th>';

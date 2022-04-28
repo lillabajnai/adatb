@@ -85,10 +85,10 @@ oci_execute($jarat);
         <div class="jarat-adatok">
             <form method="POST" action="jegyfoglalas_megerosites.php">
                 <?php
-                    utasAdatok('felnőtt',$felnott);
+                    utasAdatok('felnőtt',$felnott,$jaratszam);
 
                     if($gyermek > 0) {
-                        utasAdatok('gyermek',$gyermek);
+                        utasAdatok('gyermek',$gyermek,$jaratszam);
                     }
                 ?>
                 <fieldset id="szamlazasi-adatok">

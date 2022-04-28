@@ -116,7 +116,7 @@ function kereses($kiindulasiHely, $erkezesiHely, $datum, $legitarsasag, $utasSza
     }
 }
 
-function utasAdatok($tipus, $utas_szam) {
+function utasAdatok($tipus, $utas_szam, $jaratszam) {
     include_once('common/connection.php');
     $utazasiiroda = csatlakozas();
 
@@ -131,12 +131,14 @@ function utasAdatok($tipus, $utas_szam) {
         echo '<label class="required-label">Vezetéknév:<input type="text" placeholder="Vezetéknév" required></label>';
         echo '<label class="required-label">Keresztnév:</label><input type="text" placeholder="Keresztnév" required> <br/>';
         echo '<label class="required-label">Születési dátum:</label><input type="date" required>';
-        echo '<tr>';
-        echo '<th>';
-        echo '<label><input type="checkbox" name="etkezes-' . $tipus. '-' . $i . '" value="etkezes" checked>Étkezés</label>';
-        echo '</th>';
-        echo '<td>+ 5,720 Ft</td>';
-        echo '</tr>';
+        if(etkezes($jaratszam) === 1) {
+            echo '<tr>';
+            echo '<th>';
+            echo '<label><input type="checkbox" name="etkezes-' . $tipus. '-' . $i . '" value="etkezes" checked>Étkezés</label>';
+            echo '</th>';
+            echo '<td> +5,720 Ft</td>';
+            echo '</tr>';
+        }
         echo '</table>';
         echo '</fieldset>';
     }
@@ -161,6 +163,25 @@ function repulojegyAra($jaratszam): int {
 
     csatlakozas_zarasa($utazasiiroda);
     return $repjegy_ara;
+}
+
+function etkezes($jaratszam): int {
+    include_once('common/connection.php');
+    $utazasiiroda = csatlakozas();
+
+    $etkezes=0;
+    $etkezes_lekerdezes = oci_parse($utazasiiroda, "SELECT ETKEZES FROM JARAT WHERE JARATSZAM = '$jaratszam'");
+    oci_execute($etkezes_lekerdezes);
+    while($current_row = oci_fetch_array($etkezes_lekerdezes, OCI_ASSOC + OCI_RETURN_NULLS)) {
+        $etkezes = $current_row["ETKEZES"];
+    }
+
+    if(isset($etkezes_lekerdezes) && is_resource($etkezes_lekerdezes)) {
+        oci_free_statement($etkezes_lekerdezes);
+    }
+
+    csatlakozas_zarasa($utazasiiroda);
+    return $etkezes;
 }
 
 function foglalasokListazasa($felhasznalonev) {
