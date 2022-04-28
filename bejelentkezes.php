@@ -79,7 +79,7 @@ if(isset($_POST["bejelentkezes"])) {
 </html>
 <?php
     if(isset($felhasznalok) && is_resource($felhasznalok)) {
-        mysqli_free_result($felhasznalok);
+        oci_free_statement($felhasznalok);
     }
 
     csatlakozas_zarasa($utazasiiroda);

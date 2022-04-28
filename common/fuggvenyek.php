@@ -10,7 +10,7 @@ function menuGeneralas(string $aktualisOldal) {
         "<a href='jegyfoglalas.php'>Jegyfoglalás</a>" .
         "</li>" .
         "<li" . ($aktualisOldal === "profil" ? ' class=active' : "") . ">" .
-        (isset($_SESSION['user']) === true ? '<li><a href="profil.php">Profil</a></li>' : '<li><a href="bejelentkezes.php">Bejelentkezés/Regisztráció</a></li>') .
+        (isset($_SESSION['user']) === true ? '<a href="profil.php">Profil</a>' : '<a href="bejelentkezes.php">Bejelentkezés/Regisztráció</a>') .
         "</li>" .
         (isset($_SESSION['user']) === true ? '<li><a href="logout.php">Kijelentkezés</a></li>' : '') .
         (isset($_SESSION['user']) === true && $_SESSION['user']['felhasznalonev'] === 'admin' ? "<li" . ($aktualisOldal === "admin" ? ' class=active' : "") . '><a href="admin_statisztika.php">Admin</a></li>' : '') .
@@ -90,7 +90,7 @@ function ertekel($felhasznalonev, $legitarsasag_id, $ertekeles) {
     csatlakozas_zarasa($utazasiiroda);
 }
 
-function kereses($kiindulasiHely, $erkezesiHely, $datum, $legitarsasag, $melyik) {
+function kereses($kiindulasiHely, $erkezesiHely, $datum, $legitarsasag, $utasSzam, $melyik) {
     if($melyik === 'egy') {
         $kiindulasiHely = empty($kiindulasiHely) === true ? '%' : $kiindulasiHely;
         $erkezesiHely = empty($erkezesiHely) === true ? '%' : $erkezesiHely;
@@ -98,7 +98,7 @@ function kereses($kiindulasiHely, $erkezesiHely, $datum, $legitarsasag, $melyik)
         $legitarsasag = empty($legitarsasag) === true ? '%' : $legitarsasag;
 
         $egyiranyu_kereses = "SELECT JARATSZAM, HONNAN, HOVA, TO_CHAR(INDULAS,'YYYY.MM.DD. HH:MI') AS INDULAS, TO_CHAR(ERKEZES,'YYYY.MM.DD. HH:MI') AS ERKEZES, LEGITARSASAG.NEVE, AR, TOBBMEGALLOS, SZABAD_HELY FROM JARAT, LEGITARSASAG 
-                                        WHERE JARAT.LEGITARSASAG=LEGITARSASAG.NEVE AND TOBBMEGALLOS=0 AND SZABAD_HELY > 0 AND HONNAN LIKE '$kiindulasiHely' 
+                                        WHERE JARAT.LEGITARSASAG=LEGITARSASAG.NEVE AND TOBBMEGALLOS = 0 AND SZABAD_HELY >= '$utasSzam' AND HONNAN LIKE '$kiindulasiHely' 
                                         AND HOVA LIKE '$erkezesiHely' AND INDULAS LIKE '$datum' AND LEGITARSASAG.NEVE LIKE '$legitarsasag'";
 
         return $egyiranyu_kereses;
@@ -109,7 +109,7 @@ function kereses($kiindulasiHely, $erkezesiHely, $datum, $legitarsasag, $melyik)
         $legitarsasag = empty($legitarsasag) === true ? '%' : $legitarsasag;
 
         $tobbmegallos_kereses = "SELECT JARATSZAM, HONNAN, HOVA, TO_CHAR(INDULAS,'YYYY.MM.DD. HH:MI') AS INDULAS, TO_CHAR(ERKEZES,'YYYY.MM.DD. HH:MI') AS ERKEZES, LEGITARSASAG.NEVE, AR, TOBBMEGALLOS FROM JARAT, LEGITARSASAG 
-                                        WHERE JARAT.LEGITARSASAG=LEGITARSASAG.NEVE AND TOBBMEGALLOS NOT LIKE 0 AND SZABAD_HELY > 0 AND HONNAN LIKE '$kiindulasiHely' 
+                                        WHERE JARAT.LEGITARSASAG=LEGITARSASAG.NEVE AND TOBBMEGALLOS != 0 AND SZABAD_HELY >= '$utasSzam' AND HONNAN LIKE '$kiindulasiHely' 
                                         AND HOVA LIKE '$erkezesiHely' AND INDULAS LIKE '$datum' AND LEGITARSASAG.NEVE LIKE '$legitarsasag'";
 
         return $tobbmegallos_kereses;
@@ -178,6 +178,7 @@ function foglalasokListazasa($felhasznalonev) {
                         <th>Kiindulási hely</th>
                         <th>Érkezési hely</th>
                         <th>Indulás</th>
+                        <th>Jegy típusa</th>
                         <th>Összesített ár</th>
                     </tr>';
         while ($current_row = oci_fetch_array($foglalt, OCI_ASSOC + OCI_RETURN_NULLS)) {
@@ -185,6 +186,7 @@ function foglalasokListazasa($felhasznalonev) {
                 echo '<td>' . $current_row['HONNAN'] . '</td>';
                 echo '<td>' . $current_row['HOVA'] . '</td>';
                 echo '<td>' . $current_row['INDULAS'] . '</td>';
+                echo '<td>' . ($current_row['TIPUS'] === 0 ? 'Felnőtt jegy' : 'Gyermek jegy') . '</td>';
                 echo '<td>' . number_format($current_row['AR']) . ' Ft' .  '</td>';
                 echo '</tr>';
         }

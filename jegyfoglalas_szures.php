@@ -1,14 +1,6 @@
 <?php
 session_status() === PHP_SESSION_ACTIVE || session_start();
 
-if(isset($_POST['egyiranyu-kereses'])) {
-    $felnott = $_POST['felnott-egy'];
-    $gyermek = $_POST['gyermek-egy'];
-} else if(isset($_POST['tobbmegallos-kereses'])) {
-    $felnott = $_POST['felnott-tobb'];
-    $gyermek = $_POST['gyermek-tobb'];
-}
-
 if(!isset($_POST['felnott-egy']) && !isset($_POST['gyermek-egy']) && !isset($_POST['felnott-tobb']) && !isset($_POST['gyermek-tobb'])) {
     header("Location: jegyfoglalas.php?hibas=true");
 }
@@ -18,28 +10,35 @@ include_once("common/connection.php");
 $utazasiiroda = csatlakozas();
 
 if(isset($_POST['egyiranyu-kereses'])) {
+    $felnott = $_POST['felnott-egy'];
+    $gyermek = $_POST['gyermek-egy'];
+
     $egyiranyu_result = oci_parse($utazasiiroda, kereses(
         ($_POST['kiindulasi-hely-egy'] ?? ""), ($_POST['erkezesi-hely-egy'] ??  ""),
-        ($_POST['datum-egy'] ?? ""), ($_POST['legitarsasag-egy'] ?? ""), 'egy'));
+        ($_POST['datum-egy'] ?? ""), ($_POST['legitarsasag-egy'] ?? ""), $felnott+$gyermek, 'egy'));
     oci_execute($egyiranyu_result);
-    oci_fetch($egyiranyu_result);
 
-    if(oci_num_rows($egyiranyu_result) === 0) {
+    if(oci_fetch_all($egyiranyu_result, $res) === 0) {
         header("Location: jegyfoglalas.php?noresult=true");
+    } else {
+        oci_execute($egyiranyu_result);
     }
-}
+} else if(isset($_POST['tobbmegallos-kereses'])) {
+    $felnott = $_POST['felnott-tobb'];
+    $gyermek = $_POST['gyermek-tobb'];
 
-if(isset($_POST['tobbmegallos-kereses'])) {
     $tobbmegallos_result = oci_parse($utazasiiroda, kereses(
-                            ($_POST['kiindulasi-hely-tobb-1'] ?? ""),($_POST['erkezesi-hely-tobb-1'] ?? ""),
-                            ($_POST['datum-tobb'] ?? ""), ($_POST['legitarsasag-tobb'] ?? ""), 'tobb'));
+        ($_POST['kiindulasi-hely-tobb-1'] ?? ""),($_POST['erkezesi-hely-tobb-1'] ?? ""),
+        ($_POST['datum-tobb'] ?? ""), ($_POST['legitarsasag-tobb'] ?? ""),$felnott+$gyermek, 'tobb'));
     oci_execute($tobbmegallos_result);
-    oci_fetch($tobbmegallos_result);
 
-    if(oci_num_rows($tobbmegallos_result) === 0) {
+    if(oci_fetch_all($tobbmegallos_result, $res) === 0) {
         header("Location: jegyfoglalas.php?noresult=true");
+    } else {
+        oci_execute($tobbmegallos_result);
     }
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="hu">
