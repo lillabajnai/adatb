@@ -166,13 +166,26 @@ function foglalasokListazasa($felhasznalonev) {
 
     $foglalt = oci_parse($utazasiiroda, "SELECT JARAT.HONNAN, JARAT.HOVA, TO_CHAR(JARAT.INDULAS,'YYYY.MM.DD. HH:MI') AS INDULAS, JEGY.AR FROM JEGY, JARAT WHERE JEGY.FELHASZNALONEV = '$felhasznalonev' AND JEGY.JARATSZAM=JARAT.JARATSZAM") or die ('Hibás utasítás!');
     oci_execute($foglalt);
-    while ($current_row = oci_fetch_array($foglalt, OCI_ASSOC + OCI_RETURN_NULLS)) {
-        echo '<tr>';
-        echo '<td>' . $current_row['HONNAN'] . '</td>';
-        echo '<td>' . $current_row['HOVA'] . '</td>';
-        echo '<td>' . $current_row['INDULAS'] . '</td>';
-        echo '<td>' . number_format($current_row['AR']) . ' Ft' .  '</td>';
-        echo '</tr>';
+    oci_fetch($foglalt);
+    if(oci_num_rows($foglalt) === 0) {
+        echo '<p>' . 'Még egyetlen foglalás sem történt!' . '</p>';
+    } else {
+        echo '<table id="foglalas-adatok-table">
+                    <tr>
+                        <th>Kiindulási hely</th>
+                        <th>Érkezési hely</th>
+                        <th>Indulás</th>
+                        <th>Összesített ár</th>
+                    </tr>';
+        while ($current_row = oci_fetch_array($foglalt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+                echo '<tr>';
+                echo '<td>' . $current_row['HONNAN'] . '</td>';
+                echo '<td>' . $current_row['HOVA'] . '</td>';
+                echo '<td>' . $current_row['INDULAS'] . '</td>';
+                echo '<td>' . number_format($current_row['AR']) . ' Ft' .  '</td>';
+                echo '</tr>';
+        }
+        echo '</table>';
     }
 
 //    if(isset($foglalas) && is_resource($foglalas)) {
@@ -188,11 +201,22 @@ function ertekelesekListazasa($felhasznalonev) {
 
     $ertekeles = oci_parse($utazasiiroda, "SELECT LEGITARSASAG.NEVE, ERTEKELES FROM LEGITARSASAG, ERTEKEL WHERE ERTEKEL.FELHASZNALONEV = '$felhasznalonev' AND LEGITARSASAG.NEVE=ERTEKEL.LEGITARSASAG");
     oci_execute($ertekeles);
-    while ($current_row = oci_fetch_array($ertekeles, OCI_ASSOC + OCI_RETURN_NULLS)) {
-        echo '<tr>';
-        echo '<td>' . $current_row['NEVE'] . '</td>';
-        echo '<td>' . $current_row['ERTEKELES'] . '</td>';
-        echo '</tr>';
+    oci_fetch($ertekeles);
+    if(oci_num_rows($ertekeles) === 0) {
+        echo '<p>' . 'Még egyetlen értékelés sem történt!' . '</p>';
+    } else {
+        echo '<table id="ertekeles-adatok-table">
+                <tr>
+                    <th>Légitársaság</th>
+                    <th>Összesített értékelés pontszáma</th>
+                </tr>';
+        while ($current_row = oci_fetch_array($ertekeles, OCI_ASSOC + OCI_RETURN_NULLS)) {
+            echo '<tr>';
+            echo '<td>' . $current_row['NEVE'] . '</td>';
+            echo '<td>' . $current_row['ERTEKELES'] . '</td>';
+            echo '</tr>';
+        }
+        echo '</table>';
     }
 
 //    if(isset($ertekeles) && is_resource($ertekeles)) {

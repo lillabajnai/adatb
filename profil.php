@@ -63,7 +63,7 @@ $utazasiiroda = csatlakozas();
             }
             ?>
             <table id="adatok-table">
-                <caption><em>Saját adatok</em></caption>
+                <caption>Saját adatok</caption>
                 <tr>
                     <th>Felhasználónév:</th>
                     <td><?=$_SESSION["user"]["felhasznalonev"]?></td>
@@ -91,24 +91,10 @@ $utazasiiroda = csatlakozas();
                     <td colspan="2"><button id="ertekeles">Értékelje a járatokat üzemeltető légitársaságot!</button></td>
                 </tr>
             </table>
-            <table id="foglalas-adatok-table">
-                <caption>Foglalások</caption>
-                <tr>
-                    <th>Kiindulási hely</th>
-                    <th>Érkezési hely</th>
-                    <th>Indulás</th>
-                    <th>Összesített ár</th>
-                </tr>
+            <h2>Foglalások</h2>
                 <?php foglalasokListazasa($felhasznalonev); ?>
-            </table>
-            <table id="ertekeles-adatok-table">
-                <caption>Értékelések</caption>
-                <tr>
-                    <th>Légitársaság</th>
-                    <th>Összesített értékelés pontszáma</th>
-                </tr>
+            <h2>Értékelések</h2>
                 <?php ertekelesekListazasa($felhasznalonev); ?>
-            </table>
         </div>
         <div id="legitarsasagi-ertekeles" class="modal">
             <div class="modal-content">
