@@ -22,7 +22,7 @@
             if(isset($_GET["hibas"])) {
                 echo "<div class='hiba'>Ismételje meg a keresést!</div>";
             } else if(isset($_GET["noresult"])) {
-                echo "<div class='hiba'>A beírt adatok szerint nem található hely. Kérjük, módosítsa a feltételeket, vagy válasszon más osztályt!</div>";
+                echo "<div class='hiba'>A beírt adatok szerint nem található hely. Kérjük módosítsa a feltételeket!</div>";
             } else if(isset($_GET["foglalas"])) {
                 echo "<div class='siker'>Sikeres foglalás!</div>";
                 include_once('common/connection.php');
@@ -62,7 +62,7 @@
                         </select>
 
                         <label for="datum-egy">Dátum:</label>
-                        <input type="datetime" id="datum-egy" name="datum-egy" class="require-if-active" data-require-pair="#repjegy-tipus">
+                        <input type="datetime-local" id="datum-egy" name="datum-egy" class="require-if-active" data-require-pair="#repjegy-tipus">
 
                         <label for="legitarsasag-egy">Légitársaság:</label>
                         <select id="legitarsasag-egy" name="legitarsasag-egy">
@@ -98,7 +98,7 @@
                         </select>
 
                         <label for="datum-tobb">Dátum:</label>
-                        <input type="date" id="datum-tobb" name="datum-tobb" class="require-if-active" data-require-pair="#repjegy-tipus">
+                        <input type="datetime-local" id="datum-tobb" name="datum-tobb" class="require-if-active" data-require-pair="#repjegy-tipus">
 
                         <label for="legitarsasag-tobb">Légitársaság:</label>
                         <select id="legitarsasag-tobb" name="legitarsasag-tobb">

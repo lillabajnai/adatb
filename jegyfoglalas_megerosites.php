@@ -35,11 +35,11 @@ if(isset($_POST['foglalas'])) {
     $felnottArTomb = $_POST['felnottArTomb'];
     $gyermekArTomb = $_POST['gyermekArTomb'];
     for($i = 0; $i < $felnott; ++$i) {
-        $felnottFoglalas = oci_parse($utazasiiroda, "INSERT INTO JEGY (AR, ATSZALLASOS, TIPUS, FELHASZNALONEV, JARATSZAM) VALUES ('$felnottArTomb[$i]', 0, 1, '$felhasznalonev', '$jarat')");
+        $felnottFoglalas = oci_parse($utazasiiroda, "INSERT INTO JEGY (AR, FELHASZNALONEV, JARATSZAM) VALUES ('$felnottArTomb[$i]', '$felhasznalonev', '$jarat')");
         oci_execute($felnottFoglalas) or die('Hiba');
     }
     for($i = 0; $i < $gyermek; ++$i) {
-        $gyermekFoglalas = oci_parse($utazasiiroda, "INSERT INTO JEGY (AR, ATSZALLASOS, TIPUS, FELHASZNALONEV, JARATSZAM) VALUES ('$gyermekArTomb[$i]', 0, 0, '$felhasznalonev', '$jarat')");
+        $gyermekFoglalas = oci_parse($utazasiiroda, "INSERT INTO JEGY (AR, FELHASZNALONEV, JARATSZAM) VALUES ('$gyermekArTomb[$i]', '$felhasznalonev', '$jarat')");
         oci_execute($gyermekFoglalas) or die('Hiba');
     }
     header("Location: profil.php?foglalas=true");
@@ -95,15 +95,19 @@ if((!isset($_POST['post-felnott']) && !isset($_POST['foglalas']) && !isset($_POS
             // ÉTKEZÉS ÁRAK - FELNŐTT
             $etkezes_szamlalo=0;
             for($i = 0; $i < $felnott; ++$i) {
-                isset($_POST['etkezes-felnőtt-'. $i]) === true ? $etkezes_szamlalo++ : null;
-                $felnottArTomb[$i] += 5720;
+                if(isset($_POST['etkezes-felnőtt-'. $i])) {
+                    $etkezes_szamlalo++;
+                    $felnottArTomb[$i] += 5720;
+                }
             }
 
             // ÉTKEZÉS ÁRAK - GYERMEK
             if($gyermek > 0) {
                 for ($i = 0; $i < $gyermek; ++$i) {
-                    isset($_POST['etkezes-gyermek-' . $i]) === true ? $etkezes_szamlalo++ : null;
-                    $gyermekArTomb[$i] += 5720;
+                    if(isset($_POST['etkezes-gyermek-' . $i])) {
+                        $etkezes_szamlalo++;
+                        $gyermekArTomb[$i] += 5720;
+                    }
                 }
             }
 
@@ -111,7 +115,7 @@ if((!isset($_POST['post-felnott']) && !isset($_POST['foglalas']) && !isset($_POS
                 echo '<th>Étkezés</th>';
                 echo '<td>' . ($felnott+$gyermek) . ' x 5,720 Ft' . '</td>';
             echo '</tr>';
-            $etkezes_ara = ($felnott+$gyermek)*5720;
+            $etkezes_ara = $etkezes_szamlalo*5720;
 
             echo '<tr>';
                 echo '<th>Kezelési költség</th>';

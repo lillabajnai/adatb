@@ -22,10 +22,11 @@ if(isset($_POST['egyiranyu-kereses'])) {
         ($_POST['kiindulasi-hely-egy'] ?? ""), ($_POST['erkezesi-hely-egy'] ??  ""),
         ($_POST['datum-egy'] ?? ""), ($_POST['legitarsasag-egy'] ?? ""), 'egy'));
     oci_execute($egyiranyu_result);
+    oci_fetch($egyiranyu_result);
 
-//    if(oci_num_rows($egyiranyu_result) < 1) {
-//        header("Location: jegyfoglalas.php?noresult=true");
-//    }
+    if(oci_num_rows($egyiranyu_result) === 0) {
+        header("Location: jegyfoglalas.php?noresult=true");
+    }
 }
 
 if(isset($_POST['tobbmegallos-kereses'])) {
@@ -33,10 +34,11 @@ if(isset($_POST['tobbmegallos-kereses'])) {
                             ($_POST['kiindulasi-hely-tobb-1'] ?? ""),($_POST['erkezesi-hely-tobb-1'] ?? ""),
                             ($_POST['datum-tobb'] ?? ""), ($_POST['legitarsasag-tobb'] ?? ""), 'tobb'));
     oci_execute($tobbmegallos_result);
+    oci_fetch($tobbmegallos_result);
 
-//    if(oci_num_rows($tobbmegallos_result) < 1) {
-//        header("Location: jegyfoglalas.php?noresult=true");
-//    }
+    if(oci_num_rows($tobbmegallos_result) === 0) {
+        header("Location: jegyfoglalas.php?noresult=true");
+    }
 }
 ?>
 <!DOCTYPE html>
