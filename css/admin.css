@@ -4,7 +4,7 @@
     box-sizing: border-box;
 }
 
-#urlapok, .tabladiv {
+.container {
     display: block;
     text-align: left;
     color: beige;
@@ -14,7 +14,7 @@
     padding: 10px;
 }
 
-table {
+.alMenu table {
     width: 84vw;
     border-collapse: collapse;
     margin: auto;
@@ -22,14 +22,14 @@ table {
     line-height: 35px;
 }
 
-caption {
+.alMenu caption {
     font-weight: bold;
     margin-bottom: 20px;
     font-size: 30px;
     text-align: center;
 }
 
-.tabladiv a {
+.alMenu a {
     background-color: beige;
     border: none;
     color: black;
@@ -42,7 +42,7 @@ caption {
     text-decoration: none;
 }
 
-th ul li {
+.alMenu th ul li {
     list-style: none;
     display: block;
     float: left;
@@ -50,19 +50,44 @@ th ul li {
     margin: 0 5px 20px 5px;
 }
 
-th ul li a:hover {
+.alMenu th ul li a:hover {
     background-color: rgba(255, 255, 255, 0.3);
     color: beige;
 }
 
-th .active {
+.alMenu th .active {
     background-color: black;
     color: beige;
 }
 
-tbody td{
+.statisztika table {
+    width: 84vw;
+    border-collapse: collapse;
+    margin: auto;
+    padding: 10px;
+    line-height: 35px;
+}
+
+.statisztika td{
     border: 1px solid black;
     padding: 5px;
+}
+
+.tablak table, .naplok table {
+    display: inline;
+    border-collapse: collapse;
+    padding: 10px;
+    line-height: 35px;
+}
+
+.tablak tr td, .naplok tr td{
+    border: 1px solid black;
+    padding: 15px;
+}
+.tablak caption, .naplok caption {
+    font-weight: bold;
+    margin: 20px;
+    font-size: 23px;
 }
 
 h2 {

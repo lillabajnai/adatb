@@ -102,18 +102,7 @@ menuGeneralas('admin');
 ?>
 <main>
     <div class="container">
-        <div class="tabladiv">
-            <table>
-                <caption>Admin felület</caption>
-                <thead>
-                <tr>
-                    <th><?php alMenuGeneralas('rekordok'); ?></th>
-                </tr>
-                </thead>
-            </table>
-
-
-
+        <?php alMenuGeneralas('rekordok'); ?>
             <div id="urlapok">
                 <?php
                 if(isset($_GET["jarat"])) {
@@ -133,7 +122,7 @@ menuGeneralas('admin');
                 }
                 ?>
                 <h2>Járatok hozzáadása az adatbázishoz:</h2>
-                <form action="admin.php" method="POST">
+                <form action="admin_rekordok.php" method="POST">
                     <label for="jaratszam">Járatszám:
                         <input type="number" id="jaratszam" name="jaratszam" required/></label><br/>
 
@@ -161,7 +150,7 @@ menuGeneralas('admin');
                 </form>
 
                 <h2>Légitársaság hozzáadása az adatbázishoz:</h2>
-                <form action="admin.php" method="POST">
+                <form action="admin_rekordok.php" method="POST">
                     <label for="neve">Légitársaság neve:
                         <input type="text" id="neve" name="neve" required/></label><br/>
 
@@ -173,11 +162,11 @@ menuGeneralas('admin');
 
                     <input type="submit" name="legitarsasag-gomb" value="Megerősítés"><br/>
                 </form>
-
-                </form>
+                <div class="tablak">
+                    <?php osszesRekord(); ?>
+                </div>
             </div>
         </div>
-    </div>
 </main>
 <?php
 include_once "common/footer.php";

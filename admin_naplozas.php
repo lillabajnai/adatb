@@ -25,20 +25,9 @@ menuGeneralas('admin');
 ?>
 <main>
     <div class="container">
-        <div class="tabladiv">
-        <table>
-            <caption>Admin felület</caption>
-            <thead>
-            <tr>
-                <th><?php alMenuGeneralas('naplozas'); ?></th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-
-            </tr>
-            </tbody>
-        </table>
+        <?php alMenuGeneralas('naplozas'); ?>
+        <div class="naplok">
+            <?php logListazas(); ?>
         </div>
     </div>
 </main>

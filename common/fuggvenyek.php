@@ -155,7 +155,10 @@ function repulojegyAra($jaratszam): int {
         $repjegy_ara = $current_row["AR"];
     }
 
-    oci_free_statement($repjegy_ar_lekerdezes);
+    if(isset($repjegy_ar_lekerdezes) && is_resource($repjegy_ar_lekerdezes)) {
+        oci_free_statement($repjegy_ar_lekerdezes);
+    }
+
     csatlakozas_zarasa($utazasiiroda);
     return $repjegy_ara;
 }
@@ -188,9 +191,9 @@ function foglalasokListazasa($felhasznalonev) {
         echo '</table>';
     }
 
-//    if(isset($foglalas) && is_resource($foglalas)) {
-//        mysqli_free_result($foglalas);
-//    }
+    if(isset($foglalas) && is_resource($foglalas)) {
+        oci_free_statement($foglalas);
+    }
 
     csatlakozas_zarasa($utazasiiroda);
 }
@@ -219,23 +222,105 @@ function ertekelesekListazasa($felhasznalonev) {
         echo '</table>';
     }
 
-//    if(isset($ertekeles) && is_resource($ertekeles)) {
-//        mysqli_free_result($ertekeles);
-//    }
+    if(isset($ertekeles) && is_resource($ertekeles)) {
+        oci_free_statement($ertekeles);
+    }
 
     csatlakozas_zarasa($utazasiiroda);
 }
 
 function alMenuGeneralas(string $aktualisOldal) {
-    echo "<ul>" .
-        "<li>" .
-        "<a href='admin_statisztika.php'" . ($aktualisOldal === "statisztika" ? ' class=active' : "") . ">Statisztika</a>" .
-        "</li>" .
-        "<li>" .
-        "<a href='admin_rekordok.php'" . ($aktualisOldal === "rekordok" ? ' class=active' : "") . ">Rekordok</a>" .
-        "</li>" .
-        "<li>" .
-        "<a href='admin_naplozas.php'" . ($aktualisOldal === "naplozas" ? ' class=active' : "") . ">Naplózás</a>" .
-        "</li>" .
-        "</ul>";
+    echo '<div class="alMenu"><table> <caption>Admin felület</caption><thead><tr>';
+        echo "<th><ul>" .
+            "<li>" .
+            "<a href='admin_statisztika.php'" . ($aktualisOldal === "statisztika" ? ' class=active' : "") . ">Statisztika</a>" .
+            "</li>" .
+            "<li>" .
+            "<a href='admin_rekordok.php'" . ($aktualisOldal === "rekordok" ? ' class=active' : "") . ">Rekordok</a>" .
+            "</li>" .
+            "<li>" .
+            "<a href='admin_naplozas.php'" . ($aktualisOldal === "naplozas" ? ' class=active' : "") . ">Naplózás</a>" .
+            "</li>" .
+            "</ul></th>";
+    echo '</tr></thead></table></div>';
+
+
+}
+
+function logListazas() {
+    include_once('common/connection.php');
+    $utazasiiroda = csatlakozas();
+
+    $naplok = ['UTAS_LOG', 'JEGY_LOG', 'ERTEKEL_LOG', 'JARAT_LOG', 'LEGITARSASAG_LOG', 'BIZTOSITO_LOG', 'BIZTOSITAS_LOG', 'BIZTOSITAS_KATEGORIAK_LOG'];
+
+    foreach($naplok as $log) {
+        $naplo = oci_parse($utazasiiroda, "SELECT * FROM $log");
+        oci_execute($naplo);
+        oci_fetch($naplo);
+        if(oci_num_rows($naplo) !== 0) {
+            $nfields = oci_num_fields($naplo);
+            echo '<table><caption>' . $log . '</caption>';
+            echo '<tr>';
+            for ($i = 1; $i<=$nfields; $i++){
+                $field = oci_field_name($naplo, $i);
+                echo '<th>' . $field . '</th>';
+            }
+            echo '</tr>';
+
+            oci_execute($naplo);
+            while ( $row = oci_fetch_array($naplo, OCI_ASSOC + OCI_RETURN_NULLS)) {
+                echo '<tr>';
+                foreach ($row as $item) {
+                    echo '<td>' . $item . '</td>';
+                }
+                echo '</tr>';
+            }
+            echo '</table>';
+        }
+    }
+
+    if(isset($naplo) && is_resource($naplo)) {
+        oci_free_statement($naplo);
+    }
+
+    csatlakozas_zarasa($utazasiiroda);
+}
+
+function osszesRekord() {
+    include_once('common/connection.php');
+    $utazasiiroda = csatlakozas();
+
+    $tablak = ['UTAS', 'JEGY', 'ERTEKEL', 'JARAT', 'LEGITARSASAG', 'BIZTOSITO', 'BIZTOSITAS', 'BIZTOSITAS_KATEGORIAK'];
+
+    foreach($tablak as $tablaNev) {
+        $tabla = oci_parse($utazasiiroda, "SELECT * FROM $tablaNev");
+        oci_execute($tabla);
+        oci_fetch($tabla);
+        if(oci_num_rows($tabla) !== 0) {
+            $nfields = oci_num_fields($tabla);
+            echo '<table><caption>' . $tablaNev . '</caption>';
+            echo '<tr>';
+            for ($i = 1; $i<=$nfields; $i++){
+                $field = oci_field_name($tabla, $i);
+                echo '<th>' . $field . '</th>';
+            }
+            echo '</tr>';
+
+            oci_execute($tabla);
+            while ($row = oci_fetch_array($tabla, OCI_ASSOC + OCI_RETURN_NULLS)) {
+                echo '<tr>';
+                foreach ($row as $item) {
+                    echo '<td>' . $item . '</td>';
+                }
+                echo '</tr>';
+            }
+            echo '</table>';
+        }
+    }
+
+    if(isset($tabla) && is_resource($tabla)) {
+        oci_free_statement($tabla);
+    }
+
+    csatlakozas_zarasa($utazasiiroda);
 }
