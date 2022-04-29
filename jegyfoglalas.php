@@ -52,13 +52,13 @@
                         <label for="kiindulasi-hely-egy">Kiindulási hely:</label>
                         <select id="kiindulasi-hely-egy" name="kiindulasi-hely-egy" class="require-if-active" data-require-pair="#repjegy-tipus">
                             <option value="" disabled selected>Nincs preferencia</option>
-                            <?php kiindulasiHelyListazas(1);?>
+                            <?php kiindulasiHelyListazas();?>
                         </select>
 
                         <label for="erkezesi-hely-egy">Érkezési hely:</label>
                         <select id="erkezesi-hely-egy" name="erkezesi-hely-egy" class="require-if-active" data-require-pair="#repjegy-tipus">
                             <option value="" disabled selected>Nincs preferencia</option>
-                            <?php erkezesiHelyListazas(1); ?>
+                            <?php erkezesiHelyListazas(); ?>
                         </select>
 
                         <label for="datum-egy">Dátum:</label>
@@ -88,13 +88,13 @@
                         <label for="kiindulasi-hely-tobb-1">Kiindulási hely:</label>
                         <select id="kiindulasi-hely-tobb-1" name="kiindulasi-hely-tobb-1" class="require-if-active" data-require-pair="#repjegy-tipus">
                             <option value="" disabled selected>Nincs preferencia</option>
-                            <?php kiindulasiHelyListazas(1); ?>
+                            <?php kiindulasiHelyListazas(); ?>
                         </select>
 
                         <label for="erkezesi-hely-tobb-1">Érkezési hely:</label>
                         <select id="erkezesi-hely-tobb-1" name="erkezesi-hely-tobb-1" class="require-if-active" data-require-pair="#repjegy-tipus">
                             <option value="" disabled selected>Nincs preferencia</option>
-                            <?php erkezesiHelyListazas(1); ?>
+                            <?php erkezesiHelyListazas(); ?>
                         </select>
 
                         <label for="datum-tobb">Dátum:</label>

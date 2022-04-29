@@ -40,6 +40,7 @@ $utazasiiroda = csatlakozas();
     <link rel="stylesheet" href="css/style.css"/>
     <link rel="stylesheet" href="css/profil.css">
     <link rel="stylesheet" href="css/modal.css"/>
+    <script src="js/biztosito.js"></script>
 </head>
 <body>
 <?php
@@ -71,21 +72,6 @@ $utazasiiroda = csatlakozas();
                 <tr>
                     <th>Email cím:</th>
                     <td><?=$_SESSION["user"]["email"]?></td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <form action="jelszomodositasa.php" method="post">
-                            <input type="submit" name="ujjelszo" value="Jelszó módosítása">
-                        </form>
-                    </td>
-                </tr>
-                <tr id="profil-torles">
-                    <td colspan="2">
-                        <form action="profil.php" method="post">
-                            <input type="hidden" name="profiltorol" value="<?=$_SESSION["user"]["felhasznalonev"]?>">
-                            <input type="submit" id="submit" name="torol" value="Profil törlése">
-                        </form>
-                    </td>
                 </tr>
                 <tr>
                     <td colspan="2"><button id="ertekeles">Értékelje a járatokat üzemeltető légitársaságot!</button></td>
@@ -144,6 +130,86 @@ $utazasiiroda = csatlakozas();
             </div>
         </div>
         <script src="js/modal.js"></script>
+
+        <div id="biztositas-kotes" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span onclick="document.getElementById('biztositas-kotes').style.display='none'" class="bezaras">&times;</span>
+                    <h2>Biztosítás kötés</h2>
+                </div>
+
+                <div class="modal-body">
+                    <?php biztositasListazas(); ?>
+                    <form method="POST" action="profil.php">
+
+                        <div class="biztosito">
+                            <input type="radio" id="biztosito-1" name="biztosito">
+                            <label for="biztosito-1">Biztonságos Biztosító</label>
+
+                            <div class="biztositas-1">
+                                <label for="kategoria-1">Kategória:</label>
+                                <select id="kategoria-1" name="kategoria-1" class="require-if-active" data-require-pair="biztosito">
+                                    <?php biztositasokListazas('Hello, én a Biztonságos Biztosító vagyok, és nagyon biztonságos vagyok');?>
+                                </select>
+                                <input type="submit" value="Megkötés" name="biztositas-1-kotes" formaction="profil.php"/>
+                            </div>
+                        </div>
+
+                        <div class="biztosito">
+                            <input type="radio" id="biztosito-2" name="biztosito">
+                            <label for="biztosito-2">Megbízható Biztosító</label>
+
+                            <div class="biztositas-2">
+                                <label for="kategoria-2">Kategória:</label>
+                                <select id="kategoria-2" name="kategoria-2" class="require-if-active" data-require-pair="#biztosito">
+                                    <?php biztositasokListazas('Üdv, én a Megbízható Biztosító vagyok, és nagyon megbízható vagyok');?>
+                                </select>
+                                <input type="submit" value="Megkötés" name="biztositas-2-kotes" formaction="profil.php"/>
+                            </div>
+                        </div>
+
+                        <div class="biztosito">
+                            <input type="radio" id="biztosito-3" name="biztosito">
+                            <label for="biztosito-3">Olcsó Biztosító</label>
+
+                            <div class="biztositas-3">
+                                <label for="kategoria-3">Kategória:</label>
+                                <select id="kategoria-3" name="kategoria-3" class="require-if-active" data-require-pair="#biztosito">
+                                    <?php biztositasokListazas('Hello, én az Olcsó Biztosító vagyok, és nagyon olcsó vagyok');?>
+                                </select>
+                                <input type="submit" value="Megkötés" name="biztositas-3-kotes" formaction="profil.php"/>
+                            </div>
+                        </div>
+
+                        <div class="biztosito">
+                            <input type="radio" id="biztosito-4" name="biztosito">
+                            <label for="biztosito-4">Legjobb Biztosító</label>
+
+                            <div class="biztositas-4">
+                                <label for="kategoria-4">Kategória:</label>
+                                <select id="kategoria-4" name="kategoria-4" class="require-if-active" data-require-pair="#biztosito">
+                                    <?php biztositasokListazas('Üdv, én a Legjobb Biztosító vagyok, és én vagyok a legjobb');?>
+                                </select>
+                                <input type="submit" value="Megkötés" name="biztositas-4-kotes" formaction="profil.php"/>
+                            </div>
+                        </div>
+
+                        <div class="biztosito">
+                            <input type="radio" id="biztosito-5" name="biztosito">
+                            <label for="biztosito-5">Jó Biztosító</label>
+
+                            <div class="biztositas-5">
+                                <label for="kategoria-5">Kategória:</label>
+                                <select id="kategoria-5" name="kategoria-5" class="require-if-active" data-require-pair="#biztosito">
+                                    <?php biztositasokListazas('Hello, én a Jó Biztosító vagyok, és nagyon jó vagyok');?>
+                                </select>
+                                <input type="submit" value="Megkötés" name="biztositas-5-kotes" formaction="profil.php"/>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 </main>
 <?php

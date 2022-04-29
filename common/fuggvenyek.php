@@ -17,41 +17,37 @@ function menuGeneralas(string $aktualisOldal) {
         "</ul></div></nav>";
 }
 
-function kiindulasiHelyListazas(int $melyik) {
+function kiindulasiHelyListazas() {
     include_once('common/connection.php');
     $utazasiiroda = csatlakozas();
 
-    if($melyik === 1) {
-        $honnan1 = oci_parse($utazasiiroda, "SELECT DISTINCT(HONNAN) FROM JARAT");
-        oci_execute($honnan1);
+    $honnan = oci_parse($utazasiiroda, "SELECT DISTINCT(HONNAN) FROM JARAT");
+    oci_execute($honnan);
 
-        while ($current_row = oci_fetch_array($honnan1, OCI_ASSOC + OCI_RETURN_NULLS)) {
-            echo '<option value="'. $current_row["HONNAN"] . '"' . '>' . $current_row["HONNAN"] . '</option>';
-        }
+    while ($current_row = oci_fetch_array($honnan, OCI_ASSOC + OCI_RETURN_NULLS)) {
+        echo '<option value="'. $current_row["HONNAN"] . '"' . '>' . $current_row["HONNAN"] . '</option>';
     }
 
-    if(isset($honnan1) && is_resource($honnan1)) {
-        oci_free_statement($honnan1);
+    if(isset($honnan) && is_resource($honnan)) {
+        oci_free_statement($honnan);
     }
 
     csatlakozas_zarasa($utazasiiroda);
 }
 
-function erkezesiHelyListazas(int $melyik) {
+function erkezesiHelyListazas() {
     include_once('common/connection.php');
     $utazasiiroda = csatlakozas();
 
-    if($melyik === 1) {
-        $hova1 = oci_parse($utazasiiroda, "SELECT DISTINCT(HOVA) FROM JARAT");
-        oci_execute($hova1);
+    $hova = oci_parse($utazasiiroda, "SELECT DISTINCT(HOVA) FROM JARAT");
+    oci_execute($hova);
 
-        while ($current_row = oci_fetch_array($hova1, OCI_ASSOC + OCI_RETURN_NULLS)) {
-            echo '<option value="'. $current_row["HOVA"] . '"' . '>' . $current_row["HOVA"] . '</option>';
-        }
+    while ($current_row = oci_fetch_array($hova, OCI_ASSOC + OCI_RETURN_NULLS)) {
+        echo '<option value="'. $current_row["HOVA"] . '"' . '>' . $current_row["HOVA"] . '</option>';
     }
 
-    if(isset($hova1) && is_resource($hova1)) {
-        oci_free_statement($hova1);
+    if(isset($hova) && is_resource($hova)) {
+        oci_free_statement($hova);
     }
 
     csatlakozas_zarasa($utazasiiroda);
@@ -108,10 +104,6 @@ function kereses($kiindulasiHely, $erkezesiHely, $datum, $legitarsasag, $utasSza
         $datum = empty($datum) === true ? '%' : $datum;
         $legitarsasag = empty($legitarsasag) === true ? '%' : $legitarsasag;
 
-//        $tobbmegallos_kereses = "SELECT JARATSZAM, HONNAN, HOVA, TO_CHAR(INDULAS,'YYYY.MM.DD. HH:MI') AS INDULAS, TO_CHAR(ERKEZES,'YYYY.MM.DD. HH:MI') AS ERKEZES, LEGITARSASAG.NEVE, AR, TOBBMEGALLOS FROM JARAT, LEGITARSASAG
-//                                        WHERE JARAT.LEGITARSASAG=LEGITARSASAG.NEVE AND TOBBMEGALLOS != 0 AND SZABAD_HELY >= '$utasSzam' AND HONNAN LIKE '$kiindulasiHely'
-//                                        AND HOVA LIKE '$erkezesiHely' AND INDULAS LIKE '$datum' AND LEGITARSASAG.NEVE LIKE '$legitarsasag'";
-//
         $tobbmegallos_kereses = "SELECT ROWNUM, 
                                     egyik.JARATSZAM AS egyikJaratszam, TO_CHAR(egyik.INDULAS,'YYYY.MM.DD. HH:MI') AS egyikIndulas, TO_CHAR(egyik.ERKEZES,'YYYY.MM.DD. HH:MI') AS egyikErkezes, egyik.HONNAN AS egyikHonnan, egyik.HOVA AS egyikHova, egyik.LEGITARSASAG AS egyikLegitarsasag, egyik.AR AS egyikAr, egyik.TOBBMEGALLOS,
                                     masik.JARATSZAM AS masikJaratszam, TO_CHAR(masik.INDULAS,'YYYY.MM.DD. HH:MI') AS masikIndulas, TO_CHAR(masik.ERKEZES,'YYYY.MM.DD. HH:MI') AS masikErkezes, masik.HONNAN AS masikHonnan, masik.HOVA AS masikHova, masik.LEGITARSASAG AS masikLegitarsasag, masik.AR AS masikAr
@@ -196,31 +188,32 @@ function foglalasokListazasa($felhasznalonev) {
     include_once('common/connection.php');
     $utazasiiroda = csatlakozas();
 
-    $foglalt = oci_parse($utazasiiroda, "SELECT JARAT.HONNAN, JARAT.HOVA, TO_CHAR(JARAT.INDULAS,'YYYY.MM.DD. HH:MI') AS INDULAS, JEGY.AR, JEGY.TIPUS FROM JEGY, JARAT WHERE JEGY.FELHASZNALONEV = '$felhasznalonev' AND JEGY.JARATSZAM=JARAT.JARATSZAM") or die ('Hibás utasítás!');
+    $foglalt = oci_parse($utazasiiroda, "SELECT JARAT.JARATSZAM, JARAT.HONNAN, JARAT.HOVA, TO_CHAR(JARAT.INDULAS,'YYYY.MM.DD. HH:MI') AS INDULAS, JEGY.AR, JEGY.TIPUS FROM JEGY, JARAT WHERE JEGY.FELHASZNALONEV = '$felhasznalonev' AND JEGY.JARATSZAM=JARAT.JARATSZAM") or die ('Hibás utasítás!');
     oci_execute($foglalt);
-//    oci_fetch($foglalt);
-//    if(oci_num_rows($foglalt) === 0) {
-//        echo '<p>' . 'Még egyetlen foglalás sem történt!' . '</p>';
-//    } else {
-        echo '<table id="foglalas-adatok-table">
-                    <tr>
-                        <th>Kiindulási hely</th>
-                        <th>Érkezési hely</th>
-                        <th>Indulás</th>
-                        <th>Jegy típusa</th>
-                        <th>Ár</th>
-                    </tr>';
-        while ($current_row = oci_fetch_array($foglalt, OCI_ASSOC + OCI_RETURN_NULLS)) {
-                echo '<tr>';
-                echo '<td>' . $current_row['HONNAN'] . '</td>';
-                echo '<td>' . $current_row['HOVA'] . '</td>';
-                echo '<td>' . $current_row['INDULAS'] . '</td>';
-                echo '<td>' . ($current_row['TIPUS'] == 1 ? 'Felnőtt jegy' : 'Gyermek jegy') . '</td>';
-                echo '<td>' . number_format($current_row['AR']) . ' Ft' .  '</td>';
-                echo '</tr>';
-        }
-        echo '</table>';
-//    }
+
+    echo '<table id="foglalas-adatok-table">
+                <tr>
+                    <th>Kiindulási hely</th>
+                    <th>Érkezési hely</th>
+                    <th>Indulás</th>
+                    <th>Jegy típusa</th>
+                    <th>Ár</th>
+                    <th></th>
+                </tr>';
+    while ($current_row = oci_fetch_array($foglalt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+            echo '<tr>';
+            echo '<td>' . $current_row['HONNAN'] . '</td>';
+            echo '<td>' . $current_row['HOVA'] . '</td>';
+            echo '<td>' . $current_row['INDULAS'] . '</td>';
+            echo '<td>' . ($current_row['TIPUS'] == 1 ? 'Felnőtt jegy' : 'Gyermek jegy') . '</td>';
+            echo '<td>' . number_format($current_row['AR']) . ' Ft' .  '</td>';
+            echo '<td><form action="profil.php" method="POST">';
+            echo '<input type="hidden" name="jaratszam" value=' . $current_row["JARATSZAM"] . '>';
+            echo '<input type="button" onclick=document.getElementById("biztositas-kotes").style.display="block" class="biztositas-kotes" name="biztositas-kotes-gomb" value="Biztosítás kötés">';
+            echo '</form></td>';
+            echo '</tr>';
+    }
+    echo '</table>';
 
     if(isset($foglalas) && is_resource($foglalas)) {
         oci_free_statement($foglalas);
@@ -235,10 +228,7 @@ function ertekelesekListazasa($felhasznalonev) {
 
     $ertekeles = oci_parse($utazasiiroda, "SELECT LEGITARSASAG.NEVE, ERTEKELES FROM LEGITARSASAG, ERTEKEL WHERE ERTEKEL.FELHASZNALONEV = '$felhasznalonev' AND LEGITARSASAG.NEVE=ERTEKEL.LEGITARSASAG");
     oci_execute($ertekeles);
-//    oci_fetch($ertekeles);
-//    if(oci_num_rows($ertekeles) === 0) {
-//        echo '<p>' . 'Még egyetlen értékelés sem történt!' . '</p>';
-//    } else {
+
         echo '<table id="ertekeles-adatok-table">
                 <tr>
                     <th>Légitársaság</th>
@@ -251,7 +241,6 @@ function ertekelesekListazasa($felhasznalonev) {
             echo '</tr>';
         }
         echo '</table>';
-//    }
 
     if(isset($ertekeles) && is_resource($ertekeles)) {
         oci_free_statement($ertekeles);
@@ -274,8 +263,6 @@ function alMenuGeneralas(string $aktualisOldal) {
             "</li>" .
             "</ul></th>";
     echo '</tr></thead></table></div>';
-
-
 }
 
 function logListazas() {
@@ -351,6 +338,64 @@ function osszesRekord() {
 
     if(isset($tabla) && is_resource($tabla)) {
         oci_free_statement($tabla);
+    }
+
+    csatlakozas_zarasa($utazasiiroda);
+}
+
+function biztositasListazas() {
+    include_once('common/connection.php');
+    $utazasiiroda = csatlakozas();
+
+    $biztositok = ['Hello, én a Biztonságos Biztosító vagyok, és nagyon biztonságos vagyok',
+        'Üdv, én a Megbízható Biztosító vagyok, és nagyon megbízható vagyok',
+        'Hello, én az Olcsó Biztosító vagyok, és nagyon olcsó vagyok',
+        'Üdv, én a Legjobb Biztosító vagyok, és én vagyok a legjobb',
+        'Hello, én a Jó Biztosító vagyok, és nagyon jó vagyok'];
+
+    foreach($biztositok as $biztosito) {
+        $biztositas = oci_parse($utazasiiroda, "SELECT BIZTOSITAS_KATEGORIAK.KATEGORIA, BIZTOSITAS.AR FROM BIZTOSITAS, BIZTOSITO, BIZTOSITAS_KATEGORIAK 
+                                                    WHERE BIZTOSITO.ID=BIZTOSITAS.BIZTOSITOID AND BIZTOSITAS_KATEGORIAK.ID=BIZTOSITAS.ID 
+                                                    AND BIZTOSITO.LEIRAS = '$biztosito' ORDER BY BIZTOSITAS_KATEGORIAK.KATEGORIA");
+        oci_execute($biztositas) or die('hiba');
+
+        echo '<table id="biztositas-table">';
+            echo '<caption>' . $biztosito . '</caption>';
+                echo '<tr>
+                    <th>Kategória</th>
+                    <th>Ár</th>
+                </tr>';
+        while ($current_row = oci_fetch_array($biztositas, OCI_ASSOC + OCI_RETURN_NULLS)) {
+            echo '<tr>';
+            echo '<td>' . $current_row['KATEGORIA'] . '</td>';
+            echo '<td>' . $current_row['AR'] . '</td>';
+            echo '</tr>';
+        }
+        echo '</table>';
+    }
+
+    if(isset($biztositas) && is_resource($biztositas)) {
+        oci_free_statement($biztositas);
+    }
+
+    csatlakozas_zarasa($utazasiiroda);
+}
+
+function biztositasokListazas($melyik) {
+    include_once('common/connection.php');
+    $utazasiiroda = csatlakozas();
+
+    $biztositasok = oci_parse($utazasiiroda, "SELECT DISTINCT(BIZTOSITAS_KATEGORIAK.KATEGORIA) FROM BIZTOSITAS, BIZTOSITO, BIZTOSITAS_KATEGORIAK 
+                                                    WHERE BIZTOSITO.ID=BIZTOSITAS.BIZTOSITOID AND BIZTOSITAS_KATEGORIAK.ID=BIZTOSITAS.ID 
+                                                    AND BIZTOSITO.LEIRAS LIKE '$melyik' ORDER BY BIZTOSITAS_KATEGORIAK.KATEGORIA");
+    oci_execute($biztositasok) or die('HIBA');
+
+    while ($current_row = oci_fetch_array($biztositasok, OCI_ASSOC + OCI_RETURN_NULLS)) {
+        echo '<option value="'. $current_row["KATEGORIA"] . '"' . '>' . $current_row["KATEGORIA"] . '</option>';
+    }
+
+    if(isset($biztositasok) && is_resource($biztositasok)) {
+        oci_free_statement($biztositasok);
     }
 
     csatlakozas_zarasa($utazasiiroda);

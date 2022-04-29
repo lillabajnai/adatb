@@ -18,14 +18,12 @@ h2, p {
     margin: 20px;
 }
 
-
-
-table {
+.content table {
     width: 84vw;
     border-collapse: collapse;
 }
 
-caption {
+.content caption {
     padding: 5px;
     font-size: 30px;
     font-family: "Century Gothic", serif;
@@ -33,7 +31,7 @@ caption {
     margin: 20px 0;
 }
 
-table th {
+.content table th {
     width: 42vw;
     padding: 5px;
     font-size: 20px;
@@ -41,17 +39,17 @@ table th {
     border: 1px solid black;
 }
 
-td {
+.content td {
     padding: 5px;
     font-size: 15px;
     text-align: left;
     border: 1px solid black;
 }
 
-input[type=submit], #ertekeles {
-    background-color: black;
+input[type=submit], #ertekeles, .biztositas-kotes {
+    background-color: rgb(221, 222, 233);
     border: none;
-    color: beige;
+    color: black;
     padding: 10px 25px;
     display: block;
     margin: auto;
@@ -62,39 +60,85 @@ input[type=submit], #ertekeles {
     border-radius: 5px;
 }
 
-#ertekeles {
-    background-color: rgb(221, 222, 233);
-    color: black;
-}
-
-.profilkep {
-    height: 200px;
-}
-
-input[type=file], #profilkep-feltoltes-submit {
-    display: inline;
-}
-
-input[type=submit]:hover, #ertekeles:hover {
+input[type=submit]:hover, #ertekeles:hover, .biztositas-kotes:hover {
     background-color: rgb(113, 113, 113);
     color: beige;
 }
 
-input[type=file] {
-    width: 14vw;
-    height: 23px;
-    margin: 5px;
-    border: 3px solid beige;
-    border-radius: 4px;
+.modal-body {
+    text-align: left;
+    color: beige;
     font-family: "Century Gothic", serif;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 15px 15px;
+    padding: 10px;
+}
+
+.modal-body table {
+    display: inline;
+    border-collapse: collapse;
+    padding: 7px;
+    line-height: 20px;
+}
+
+.modal-body tr td {
+    border: 1px solid black;
+    padding: 7px;
+}
+.modal-body caption {
+    font-weight: bold;
+    margin: 15px;
+    font-size: 20px;
+}
+
+.biztosito {
     font-size: 15px;
+    margin: 10px;
 }
 
-input[type=file] {
-    width: 17vw;
-    height: 30px;
+.biztositas-1, .biztositas-2, .biztositas-3, .biztositas-4, .biztositas-5 {
+    opacity: 0;        /* ilyenkor nem látszik a div */
+    max-height: 0;
+    overflow: hidden;
+    transform: scale(0.8);
+    transition: 0.8s;
+    font-size: 20px;
 }
 
-input[type=file]:focus {
-    border: 3px solid black;
+input, select {
+    font-family: "Century Gothic", serif;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+input[type="radio"]:checked ~ .biztositas-1, input[type="radio"]:checked ~ .biztositas-2,
+input[type="radio"]:checked ~ .biztositas-3, input[type="radio"]:checked ~ .biztositas-4,
+input[type="radio"]:checked ~ .biztositas-5 {
+    opacity: 1;       /* ilyenkor látszik a div */
+    max-height: 500px;
+    overflow: visible;
+}
+
+input[type="radio"]:checked {
+    opacity: 1;
+    max-height: 100px;
+    overflow: visible;
+    padding: 10px 20px;
+    transform: scale(1);
+}
+
+.biztosito input[type="submit"] {
+    background-color: darkgray;
+    border: none;
+    color: black;
+    padding: 10px 25px;
+    margin: 2px;
+    cursor: pointer;
+    font-family: "Century Gothic", serif;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+.biztosito input[type="submit"]:hover {
+    background-color: beige;
 }
