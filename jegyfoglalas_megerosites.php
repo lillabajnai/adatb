@@ -9,7 +9,8 @@ if(!isset($_SESSION["user"]) || empty($_SESSION["user"])){
 }
 
 if(isset($_POST['megerosites'])) {
-    $jaratszam=$_POST['post-jaratszam'];
+    $egyikJaratszam=$_POST['post-jaratszam-egyik'];
+    $masikJaratszam = $_POST['post-jaratszam-masik'] ?? '';
     $felnott=$_POST['post-felnott'];
     $gyermek=$_POST['post-gyermek'];
 }
@@ -23,23 +24,39 @@ $utazasiiroda = csatlakozas();
     TIPUS NUMBER(1) NOT NULL,                --0: GYEREK, 1: FELNOTT
     FELHASZNALONEV VARCHAR(20),
     JARATSZAM NUMBER(4) NOT NULL,
- */
+*/
 
 // MENTÉS AZ ADATBÁZISBA
 if(isset($_POST['foglalas'])) {
-    $jarat = $_POST['jaratszam-vegso'];
+    $egyikJarat = $_POST['jaratszam-vegso-egyik'];
     $ar = $_POST['post-ara'];
     $felnott = $_POST['felnott'];
     $gyermek = $_POST['gyermek'];
     $felnottArTomb = $_POST['felnottArTomb'];
     $gyermekArTomb = $_POST['gyermekArTomb'];
+    $felnottArTombMasik = $_POST['felnottArTombMasik'];
+    $gyermekArTombMasik = $_POST['gyermekArTombMasik'];
     for($i = 0; $i < $felnott; ++$i) {
-        $felnottFoglalas = oci_parse($utazasiiroda, "INSERT INTO JEGY (AR, TIPUS, FELHASZNALONEV, JARATSZAM) VALUES ('$felnottArTomb[$i]', 1, '$felhasznalonev', '$jarat')");
+        $felnottFoglalas = oci_parse($utazasiiroda, "INSERT INTO JEGY (AR, TIPUS, FELHASZNALONEV, JARATSZAM) VALUES ('$felnottArTomb[$i]', 1, '$felhasznalonev', '$egyikJarat')");
         oci_execute($felnottFoglalas) or die('Hiba');
+
+        if(isset($_POST['jaratszam-vegso-masik'])) {
+            $masikJarat = $_POST['jaratszam-vegso-masik'];
+            $felnottFoglalas = oci_parse($utazasiiroda, "INSERT INTO JEGY (AR, TIPUS, FELHASZNALONEV, JARATSZAM) VALUES ('$felnottArTombMasik[$i]', 1, '$felhasznalonev', '$masikJarat')");
+            oci_execute($felnottFoglalas) or die('Hiba');
+        }
     }
-    for($i = 0; $i < $gyermek; ++$i) {
-        $gyermekFoglalas = oci_parse($utazasiiroda, "INSERT INTO JEGY (AR, TIPUS, FELHASZNALONEV, JARATSZAM) VALUES ('$gyermekArTomb[$i]', 0, '$felhasznalonev', '$jarat')");
-        oci_execute($gyermekFoglalas) or die('Hiba');
+    if($gyermek > 0) {
+        for($i = 0; $i < $gyermek; ++$i) {
+            $gyermekFoglalas = oci_parse($utazasiiroda, "INSERT INTO JEGY (AR, TIPUS, FELHASZNALONEV, JARATSZAM) VALUES ('$gyermekArTomb[$i]', 0, '$felhasznalonev', '$egyikJarat')");
+            oci_execute($gyermekFoglalas) or die('Hiba');
+
+            if(isset($_POST['jaratszam-vegso-masik'])) {
+                $masikJarat = $_POST['jaratszam-vegso-masik'];
+                $gyermekFoglalas = oci_parse($utazasiiroda, "INSERT INTO JEGY (AR, TIPUS, FELHASZNALONEV, JARATSZAM) VALUES ('$gyermekArTombMasik[$i]', 0, '$felhasznalonev', '$masikJarat')");
+                oci_execute($gyermekFoglalas) or die('Hiba');
+            }
+        }
     }
     header("Location: profil.php?foglalas=true");
 }
@@ -70,35 +87,66 @@ if((!isset($_POST['post-felnott']) && !isset($_POST['foglalas']) && !isset($_POS
         <caption>Repülőjegy díjtételei:</caption>
             <?php
             $felnottArTomb = [];
+            $felnottArTombMasik = [];
             $gyermekArTomb = [];
+            $gyermekArTombMasik = [];
             $alapar=0;
-            $repjegyAra = repulojegyAra($jaratszam);
-            echo '<tr>';
-                echo '<th>Felnőtt alapár</th>';
-                echo '<td>' . $felnott . ' x ' . number_format($repjegyAra) . ' Ft' . '</td>';
-            echo '</tr>';
-            $alapar+=$felnott*$repjegyAra;
-            for($i = 0; $i < $felnott; ++$i) {
-                array_push($felnottArTomb,$repjegyAra);
-            }
-            if($gyermek > 0) {
+            $egyikRepjegyAra = repulojegyAra($egyikJaratszam) ;
+            $masikRepjegyAra = isset($_POST['post-jaratszam-masik']) ? repulojegyAra($masikJaratszam) : 0;
+            if($masikRepjegyAra === 0) {
                 echo '<tr>';
-                    echo '<th>Gyermek alapár</th>';
-                    echo '<td>' . $gyermek . ' x ' . number_format($repjegyAra) . ' Ft' . '</td>';
+                    echo '<th>Felnőtt alapár</th>';
+                    echo '<td>' . $felnott . ' x ' . number_format($egyikRepjegyAra) . ' Ft' . '</td>';
                 echo '</tr>';
-                $alapar+=$gyermek*$repjegyAra;
+                $alapar+=$felnott*$egyikRepjegyAra;
                 for($i = 0; $i < $felnott; ++$i) {
-                    array_push($gyermekArTomb,$repjegyAra);
+                    array_push($felnottArTomb,$egyikRepjegyAra);
+                }
+                if($gyermek > 0) {
+                    echo '<tr>';
+                        echo '<th>Gyermek alapár</th>';
+                        echo '<td>' . $gyermek . ' x ' . number_format($egyikRepjegyAra) . ' Ft' . '</td>';
+                    echo '</tr>';
+                    $alapar+=$gyermek*$egyikRepjegyAra;
+                    for($i = 0; $i < $felnott; ++$i) {
+                        array_push($gyermekArTomb,$egyikRepjegyAra);
+                    }
+                }
+            } else {
+                echo '<tr>';
+                echo '<th>Felnőtt alapár</th>';
+                echo '<td>' . $felnott . ' x ' . number_format($egyikRepjegyAra) . ' Ft' . '</td>';
+                echo '<td>' . $felnott . ' x ' . number_format($masikRepjegyAra) . ' Ft' . '</td>';
+                echo '</tr>';
+                $alapar+=$felnott*($egyikRepjegyAra+$masikRepjegyAra);
+                for($i = 0; $i < $felnott; ++$i) {
+                    array_push($felnottArTomb,$egyikRepjegyAra);
+                    array_push($felnottArTombMasik,$masikRepjegyAra);
+                }
+                if($gyermek > 0) {
+                    echo '<tr>';
+                    echo '<th>Gyermek alapár</th>';
+                    echo '<td>' . $gyermek . ' x ' . number_format($egyikRepjegyAra) . ' Ft' . '</td>';
+                    echo '<td>' . $gyermek . ' x ' . number_format($masikRepjegyAra) . ' Ft' . '</td>';
+                    echo '</tr>';
+                    $alapar+=$gyermek*($egyikRepjegyAra+$masikRepjegyAra);
+                    for($i = 0; $i < $felnott; ++$i) {
+                        array_push($gyermekArTomb,$egyikRepjegyAra);
+                        array_push($gyermekArTombMasik,$masikRepjegyAra);
+                    }
                 }
             }
+
+
             $etkezes_ara = 0;
-            if(etkezes($jaratszam) === 1) {
+            if(etkezes($egyikJaratszam) === 1) {
                 // ÉTKEZÉS ÁRAK - FELNŐTT
                 $etkezes_szamlalo = 0;
                 for ($i = 1; $i <= $felnott; ++$i) {
                     if (isset($_POST['etkezes-felnőtt-' . $i])) {
                         $etkezes_szamlalo++;
                         $felnottArTomb[$i - 1] += 5720;
+                        $felnottArTombMasik[$i - 1] += 5720;
                     }
                 }
 
@@ -108,6 +156,7 @@ if((!isset($_POST['post-felnott']) && !isset($_POST['foglalas']) && !isset($_POS
                         if (isset($_POST['etkezes-gyermek-' . $i])) {
                             $etkezes_szamlalo++;
                             $gyermekArTomb[$i - 1] += 5720;
+                            $gyermekArTombMasik[$i - 1] += 5720;
                         }
                     }
                 }
@@ -126,10 +175,9 @@ if((!isset($_POST['post-felnott']) && !isset($_POST['foglalas']) && !isset($_POS
             echo '</tr>';
 
             // OSSZEGEK SZUMMAZASA
-            $osszesen=$alapar + $etkezes_ara + $kezelesi;
             echo '<tr>';
                 echo '<th>Összesen:</th>';
-                echo '<td>' . number_format($osszesen) . ' Ft' . '</td>';
+                echo '<td>' . number_format($alapar + $etkezes_ara + $kezelesi) . ' Ft' . '</td>';
             echo '</tr>';
             ?>
         </table>
@@ -145,7 +193,8 @@ if((!isset($_POST['post-felnott']) && !isset($_POST['foglalas']) && !isset($_POS
                 </label> <br/>
             </div>
             <?php
-            echo '<input type="hidden" name="jaratszam-vegso" value=' . $jaratszam . '>';
+            echo '<input type="hidden" name="jaratszam-vegso-egyik" value=' . $egyikJaratszam . '>';
+            echo isset($_POST['post-jaratszam-masik']) ? '<input type="hidden" name="jaratszam-vegso-masik" value=' . $masikJaratszam . '>' : '';
             echo '<input type="hidden" name="felnott" value=' . $felnott . '>';
             echo '<input type="hidden" name="gyermek" value=' . $gyermek . '>';
             foreach($felnottArTomb as $tombElem) {
@@ -154,7 +203,14 @@ if((!isset($_POST['post-felnott']) && !isset($_POST['foglalas']) && !isset($_POS
             foreach($gyermekArTomb as $tombElem) {
                 echo '<input type="hidden" name="gyermekArTomb[]" value=' . $tombElem . '>';
             }
-            echo '<input type="hidden" name="post-ara" value=' . $osszesen . '>';
+            if($masikRepjegyAra !== 0) {
+                foreach ($felnottArTombMasik as $tombElem) {
+                    echo '<input type="hidden" name="felnottArTombMasik[]" value=' . $tombElem . '>';
+                }
+                foreach ($gyermekArTombMasik as $tombElem) {
+                    echo '<input type="hidden" name="gyermekArTombMasik[]" value=' . $tombElem . '>';
+                }
+            }
             ?>
             <input type="submit" name="foglalas" value="Foglalás">
         </form>
@@ -166,6 +222,10 @@ if((!isset($_POST['post-felnott']) && !isset($_POST['foglalas']) && !isset($_POS
 <?php
     if(isset($felnottFoglalas) && is_resource($felnottFoglalas)) {
         oci_free_statement($felnottFoglalas);
+    }
+
+    if(isset($gyermekFoglalas) && is_resource($gyermekFoglalas)) {
+        oci_free_statement($gyermekFoglalas);
     }
 
     csatlakozas_zarasa($utazasiiroda);

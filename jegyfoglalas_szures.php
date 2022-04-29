@@ -32,11 +32,12 @@ if(isset($_POST['egyiranyu-kereses'])) {
         ($_POST['datum-tobb'] ?? ""), ($_POST['legitarsasag-tobb'] ?? ""),$felnott+$gyermek, 'tobb'));
     oci_execute($tobbmegallos_result);
 
-    if(oci_fetch_all($tobbmegallos_result, $res) === 0) {
-        header("Location: jegyfoglalas.php?noresult=true");
-    } else {
+//    if(oci_fetch_all($tobbmegallos_result, $res) === 0) {
+//        header("Location: jegyfoglalas.php?noresult=true");
+//    }
+//    else {
         oci_execute($tobbmegallos_result);
-    }
+//    }
 }
 
 ?>
@@ -91,21 +92,34 @@ if(isset($_POST['egyiranyu-kereses'])) {
                             echo '</tr>';
                     }
                     while (isset($_POST['tobbmegallos-kereses']) && ($current_row = oci_fetch_array($tobbmegallos_result, OCI_ASSOC + OCI_RETURN_NULLS))) {
-                        echo '<tr class="egy-jarat">';
-                            echo '<td headers="jaratszam">' . $current_row["JARATSZAM"] . '</td>';
-                            echo '<td headers="kiindulopont">' . $current_row["HONNAN"] . '</td>';
-                            echo '<td headers="uticel">' . $current_row["HOVA"] . '</td>';
-                            echo '<td headers="indulasi-ido">' . $current_row["INDULAS"] . '</td>';
-                            echo '<td headers="erkezesi-ido">' . $current_row["ERKEZES"] . '</td>';
-                            echo '<td headers="legitarsasag">' . $current_row["NEVE"] . '</td>';
-                            echo '<td headers="ar">' . number_format($current_row["AR"]) . '</td>';
-                            echo '<td><form action="jegyfoglalas_foglalas.php" method="POST">';
-                            echo '<input type="hidden" name="post-jaratszam-tobb" value=' . $current_row["JARATSZAM"] . '>';
-                            echo '<input type="hidden" name="post-felnott-tobb" value=' . $felnott . '>';
-                            echo '<input type="hidden" name="post-gyermek-tobb" value=' . $gyermek . '>';
-                            echo '<input type="submit" class="foglalas-gomb" name="tobbmegallos-kereses-gomb" value="Foglalás">';
-                            echo '</form></td>';
-                        echo '</tr>';
+                        if($current_row['ROWNUM'] % 2 === 0 && $current_row["EGYIKJARATSZAM"] !== $current_row["MASIKJARATSZAM"]) {
+                            echo '<tr class="egy-jarat">';
+                                echo '<td headers="jaratszam">' . $current_row["EGYIKJARATSZAM"] . '</td>';
+                                echo '<td headers="kiindulopont">' . $current_row["EGYIKHONNAN"] . '</td>';
+                                echo '<td headers="uticel">' . $current_row["EGYIKHOVA"] . '</td>';
+                                echo '<td headers="indulasi-ido">' . $current_row["EGYIKINDULAS"] . '</td>';
+                                echo '<td headers="erkezesi-ido">' . $current_row["EGYIKERKEZES"] . '</td>';
+                                echo '<td headers="legitarsasag">' . $current_row["EGYIKLEGITARSASAG"] . '</td>';
+                                echo '<td headers="ar">' . number_format($current_row["EGYIKAR"]) . '</td>';
+                                echo '<td></td>';
+                            echo '</tr>';
+                            echo '<tr class="egy-jarat">';
+                                echo '<td headers="jaratszam">' . $current_row["MASIKJARATSZAM"] . '</td>';
+                                echo '<td headers="kiindulopont">' . $current_row["MASIKHONNAN"] . '</td>';
+                                echo '<td headers="uticel">' . $current_row["MASIKHOVA"] . '</td>';
+                                echo '<td headers="indulasi-ido">' . $current_row["MASIKINDULAS"] . '</td>';
+                                echo '<td headers="erkezesi-ido">' . $current_row["MASIKERKEZES"] . '</td>';
+                                echo '<td headers="legitarsasag">' . $current_row["MASIKLEGITARSASAG"] . '</td>';
+                                echo '<td headers="ar">' . number_format($current_row["MASIKAR"]) . '</td>';
+                                echo '<td><form action="jegyfoglalas_foglalas.php" method="POST">';
+                                echo '<input type="hidden" name="post-jaratszam-tobb-egyik" value=' . $current_row["EGYIKJARATSZAM"] . '>';
+                                echo '<input type="hidden" name="post-jaratszam-tobb-masik" value=' . $current_row["MASIKJARATSZAM"] . '>';
+                                echo '<input type="hidden" name="post-felnott-tobb" value=' . $felnott . '>';
+                                echo '<input type="hidden" name="post-gyermek-tobb" value=' . $gyermek . '>';
+                                echo '<input type="submit" class="foglalas-gomb" name="tobbmegallos-kereses-gomb" value="Foglalás">';
+                                echo '</form></td>';
+                            echo '</tr>';
+                        }
                     }
                 ?>
                 </tbody>

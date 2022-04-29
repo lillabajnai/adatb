@@ -108,10 +108,18 @@ function kereses($kiindulasiHely, $erkezesiHely, $datum, $legitarsasag, $utasSza
         $datum = empty($datum) === true ? '%' : $datum;
         $legitarsasag = empty($legitarsasag) === true ? '%' : $legitarsasag;
 
-        $tobbmegallos_kereses = "SELECT JARATSZAM, HONNAN, HOVA, TO_CHAR(INDULAS,'YYYY.MM.DD. HH:MI') AS INDULAS, TO_CHAR(ERKEZES,'YYYY.MM.DD. HH:MI') AS ERKEZES, LEGITARSASAG.NEVE, AR, TOBBMEGALLOS FROM JARAT, LEGITARSASAG 
-                                        WHERE JARAT.LEGITARSASAG=LEGITARSASAG.NEVE AND TOBBMEGALLOS != 0 AND SZABAD_HELY >= '$utasSzam' AND HONNAN LIKE '$kiindulasiHely' 
-                                        AND HOVA LIKE '$erkezesiHely' AND INDULAS LIKE '$datum' AND LEGITARSASAG.NEVE LIKE '$legitarsasag'";
-
+//        $tobbmegallos_kereses = "SELECT JARATSZAM, HONNAN, HOVA, TO_CHAR(INDULAS,'YYYY.MM.DD. HH:MI') AS INDULAS, TO_CHAR(ERKEZES,'YYYY.MM.DD. HH:MI') AS ERKEZES, LEGITARSASAG.NEVE, AR, TOBBMEGALLOS FROM JARAT, LEGITARSASAG
+//                                        WHERE JARAT.LEGITARSASAG=LEGITARSASAG.NEVE AND TOBBMEGALLOS != 0 AND SZABAD_HELY >= '$utasSzam' AND HONNAN LIKE '$kiindulasiHely'
+//                                        AND HOVA LIKE '$erkezesiHely' AND INDULAS LIKE '$datum' AND LEGITARSASAG.NEVE LIKE '$legitarsasag'";
+//
+        $tobbmegallos_kereses = "SELECT ROWNUM, 
+                                    egyik.JARATSZAM AS egyikJaratszam, TO_CHAR(egyik.INDULAS,'YYYY.MM.DD. HH:MI') AS egyikIndulas, TO_CHAR(egyik.ERKEZES,'YYYY.MM.DD. HH:MI') AS egyikErkezes, egyik.HONNAN AS egyikHonnan, egyik.HOVA AS egyikHova, egyik.LEGITARSASAG AS egyikLegitarsasag, egyik.AR AS egyikAr, egyik.TOBBMEGALLOS,
+                                    masik.JARATSZAM AS masikJaratszam, TO_CHAR(masik.INDULAS,'YYYY.MM.DD. HH:MI') AS masikIndulas, TO_CHAR(masik.ERKEZES,'YYYY.MM.DD. HH:MI') AS masikErkezes, masik.HONNAN AS masikHonnan, masik.HOVA AS masikHova, masik.LEGITARSASAG AS masikLegitarsasag, masik.AR AS masikAr
+                                    FROM JARAT egyik
+                                    INNER JOIN JARAT masik ON egyik.TOBBMEGALLOS = masik.TOBBMEGALLOS AND egyik.TOBBMEGALLOS > 0 AND masik.TOBBMEGALLOS > 0
+                                    AND egyik.HONNAN LIKE '$kiindulasiHely' AND masik.HOVA LIKE '$erkezesiHely' AND egyik.INDULAS LIKE '$datum' 
+                                    AND egyik.LEGITARSASAG LIKE '$legitarsasag' AND masik.LEGITARSASAG LIKE '$legitarsasag' 
+                                    AND egyik.SZABAD_HELY >= '$utasSzam' AND masik.SZABAD_HELY >= '$utasSzam'";
         return $tobbmegallos_kereses;
     }
 }
@@ -150,7 +158,7 @@ function repulojegyAra($jaratszam): int {
     include_once('common/connection.php');
     $utazasiiroda = csatlakozas();
 
-    $repjegy_ara='0';               // az ár kezdőértéke 0
+    $repjegy_ara='0';
     $repjegy_ar_lekerdezes = oci_parse($utazasiiroda, "SELECT AR FROM JARAT WHERE JARATSZAM = '$jaratszam'") or die ('Hibás utasítás!');
     oci_execute($repjegy_ar_lekerdezes);
     while($current_row = oci_fetch_array($repjegy_ar_lekerdezes, OCI_ASSOC + OCI_RETURN_NULLS)) {
@@ -200,7 +208,7 @@ function foglalasokListazasa($felhasznalonev) {
                         <th>Érkezési hely</th>
                         <th>Indulás</th>
                         <th>Jegy típusa</th>
-                        <th>Összesített ár</th>
+                        <th>Ár</th>
                     </tr>';
         while ($current_row = oci_fetch_array($foglalt, OCI_ASSOC + OCI_RETURN_NULLS)) {
                 echo '<tr>';

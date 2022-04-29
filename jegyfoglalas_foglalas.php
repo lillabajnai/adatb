@@ -7,11 +7,12 @@ if(!isset($_SESSION["user"]) || empty($_SESSION["user"])){
 }
 
 if(isset($_POST['egyiranyu-kereses-gomb'])) {
-    $jaratszam=$_POST['post-jaratszam-egy'];
+    $egyikJaratszam=$_POST['post-jaratszam-egy'];
     $felnott=$_POST['post-felnott-egy'];
     $gyermek=$_POST['post-gyermek-egy'];
 } else if(isset($_POST['tobbmegallos-kereses-gomb'])) {
-    $jaratszam=$_POST['post-jaratszam-tobb'];
+    $egyikJaratszam=$_POST['post-jaratszam-tobb-egyik'];
+    $masikJaratszam=$_POST['post-jaratszam-tobb-masik'];
     $felnott=$_POST['post-felnott-tobb'];
     $gyermek=$_POST['post-gyermek-tobb'];
 }
@@ -23,7 +24,7 @@ if(!isset($_POST['post-felnott-egy']) && !isset($_POST['post-gyermek-egy']) && !
 include_once("common/connection.php");
 $utazasiiroda = csatlakozas();
 
-$jarat = oci_parse($utazasiiroda, "SELECT TO_CHAR(INDULAS,'YYYY.MM.DD. HH:MI') AS INDULAS, HONNAN, HOVA, TO_CHAR(ERKEZES,'YYYY.MM.DD. HH:MI') AS ERKEZES, TOBBMEGALLOS FROM JARAT WHERE JARATSZAM = '$jaratszam'");
+$jarat = oci_parse($utazasiiroda, "SELECT TO_CHAR(INDULAS,'YYYY.MM.DD. HH:MI') AS INDULAS, HONNAN, HOVA, TO_CHAR(ERKEZES,'YYYY.MM.DD. HH:MI') AS ERKEZES, TOBBMEGALLOS FROM JARAT WHERE JARATSZAM = '$egyikJaratszam'");
 oci_execute($jarat);
 ?>
 <!DOCTYPE html>
@@ -62,11 +63,9 @@ oci_execute($jarat);
                         echo '<td headers="kiindulopont">' . $current_row["HONNAN"] . '</td>';
                         echo '<td headers="uticel">' . $current_row["HOVA"] . '</td>';
                         echo '<td headers="erkezesi-ido">' . $current_row["ERKEZES"] . '</td>';
-                        $tobbmegallos = $current_row["TOBBMEGALLOS"];
                         echo '</tr>';
                         if($current_row['TOBBMEGALLOS'] != 0) {
-                            // TODO: a többmegállós járat párjának lekérdezése és kiíratása
-                            $jarat_parja = oci_parse($utazasiiroda, "SELECT TO_CHAR(INDULAS,'YYYY.MM.DD. HH:MI') AS INDULAS, HONNAN, HOVA, TO_CHAR(ERKEZES,'YYYY.MM.DD. HH:MI') AS ERKEZES, TOBBMEGALLOS FROM JARAT WHERE JARATSZAM NOT LIKE '$jaratszam' AND TOBBMEGALLOS='$tobbmegallos'");
+                            $jarat_parja = oci_parse($utazasiiroda, "SELECT TO_CHAR(INDULAS,'YYYY.MM.DD. HH:MI') AS INDULAS, HONNAN, HOVA, TO_CHAR(ERKEZES,'YYYY.MM.DD. HH:MI') AS ERKEZES FROM JARAT WHERE JARATSZAM LIKE '$masikJaratszam'");
                             oci_execute($jarat_parja);
                             while (($current_row = oci_fetch_array($jarat_parja, OCI_ASSOC + OCI_RETURN_NULLS))) {
                                 echo '<tr class="egy-jarat">';
@@ -85,10 +84,10 @@ oci_execute($jarat);
         <div class="jarat-adatok">
             <form method="POST" action="jegyfoglalas_megerosites.php">
                 <?php
-                    utasAdatok('felnőtt',$felnott,$jaratszam);
+                    utasAdatok('felnőtt',$felnott,$egyikJaratszam);
 
                     if($gyermek > 0) {
-                        utasAdatok('gyermek',$gyermek,$jaratszam);
+                        utasAdatok('gyermek',$gyermek,$egyikJaratszam);
                     }
                 ?>
                 <fieldset id="szamlazasi-adatok">
@@ -131,7 +130,8 @@ oci_execute($jarat);
                     </table>
                 </fieldset>
                 <?php
-                    echo '<input type="hidden" name="post-jaratszam" value=' . $jaratszam . '>';
+                    echo '<input type="hidden" name="post-jaratszam-egyik" value=' . $egyikJaratszam . '>';
+                    echo isset($_POST['post-jaratszam-tobb-egyik']) ? '<input type="hidden" name="post-jaratszam-masik" value=' . $masikJaratszam . '>' : '';
                     echo '<input type="hidden" name="post-felnott" value=' . $felnott . '>';
                     echo '<input type="hidden" name="post-gyermek" value=' . $gyermek . '>';
                 ?>
