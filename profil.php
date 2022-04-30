@@ -1,6 +1,4 @@
 <?php
-include_once("common/fuggvenyek.php");
-
 session_status() === PHP_SESSION_ACTIVE || session_start();
 
 if(!isset($_SESSION["user"]) || empty($_SESSION["user"])){
@@ -10,26 +8,15 @@ if(!isset($_SESSION["user"]) || empty($_SESSION["user"])){
     $felhasznalonev = $_SESSION["user"]["felhasznalonev"];
 }
 
-// ERTEKELES MENTESE AZ ADATBAZISBA
+include_once("common/fuggvenyek.php");
 if(isset($_POST['ertekeles'])) {
-    ertekel($felhasznalonev,
-        (htmlspecialchars($_POST['legitarsasag']) ?? ""),
-        ( (htmlspecialchars($_POST['szemelyzet']) ?? 3) + (htmlspecialchars($_POST['szolgaltatas']) ?? 3) + (htmlspecialchars($_POST['menetrend']) ?? 3) + (htmlspecialchars($_POST['ar-ertek']) ?? 3) ) / 4);
-    header("Location: profil.php?ertekeles=true");
+    $legitarsasag = htmlspecialchars($_POST['legitarsasag']);
+    $ertekeles = ((htmlspecialchars($_POST['szemelyzet']) ?? 3) +
+                    (htmlspecialchars($_POST['szolgaltatas']) ?? 3) +
+                    (htmlspecialchars($_POST['menetrend']) ?? 3) +
+                    (htmlspecialchars($_POST['ar-ertek']) ?? 3)) / 4;
+    ertekel($felhasznalonev, $legitarsasag, $ertekeles);
 }
-
-include_once "common/connection.php";
-$utazasiiroda = csatlakozas();
-
-    if(isset($_POST['torol'])){
-        $profiltorol = $_SESSION["user"]["felhasznalonev"];
-
-        $adat = "DELETE FROM UTAS WHERE FELHASZNALONEV = '$profiltorol'";
-
-        if(mysqli_query($utazasiiroda, $adat)){
-            header('Location: logout.php');
-        }
-    }
 ?>
 <!DOCTYPE html>
 <html lang="hu">
@@ -49,19 +36,19 @@ $utazasiiroda = csatlakozas();
 ?>
 <main>
     <div class="container">
-        <div class="content">
+        <div class="sajat-adatok">
             <?php
-            if(isset($_GET["login"])) {
-                echo "<div class='siker'>Sikeres bejelentkezés!</div>";
-            } else if (isset($_GET["foglalas"])) {
-                echo "<div class='siker'>Sikeres jegyfoglalás!</div>";
-            } else if (isset($_GET['mod'])) {
-                echo "<div class='siker'>A jelszó sikeresen meg lett változtatva!</div>";
-            } else if (isset($_GET['profkepSiker'])) {
-                echo "<div class='siker'>A profilkép sikeresen meg lett változtatva!</div>";
-            } else if (isset($_GET['ertekeles'])) {
-                echo "<div class='siker'>Sikeres értékelés!</div>";
-            }
+                if(isset($_GET["login"])) {
+                    echo "<div class='siker'>Sikeres bejelentkezés!</div>";
+                } else if (isset($_GET["foglalas"])) {
+                    echo "<div class='siker'>Sikeres jegyfoglalás!</div>";
+                } else if (isset($_GET['mod'])) {
+                    echo "<div class='siker'>A jelszó sikeresen meg lett változtatva!</div>";
+                } else if (isset($_GET['profkepSiker'])) {
+                    echo "<div class='siker'>A profilkép sikeresen meg lett változtatva!</div>";
+                } else if (isset($_GET['ertekeles'])) {
+                    echo "<div class='siker'>Sikeres értékelés!</div>";
+                }
             ?>
             <table id="adatok-table">
                 <caption>Saját adatok</caption>

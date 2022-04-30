@@ -6,35 +6,13 @@ if(isset($_SESSION["user"]) && !empty($_SESSION["user"])){
     exit();
 }
 
-include_once "common/connection.php";
-include_once "common/fuggvenyek.php";
-$utazasiiroda = csatlakozas();
+include_once("common/fuggvenyek.php");
 
 if(isset($_POST['regisztracio'])) {
     $felhasznalonev = htmlspecialchars($_POST['felhasznalonev']);
-    $jelszo = htmlspecialchars($_POST['jelszo']);
     $email = htmlspecialchars($_POST['email']);
-
-    $felhasznalok = oci_parse($utazasiiroda, 'SELECT * FROM UTAS');
-    oci_execute($felhasznalok);
-
-    $errors = [];
-
-    while ($current_row = oci_fetch_array($felhasznalok, OCI_ASSOC + OCI_RETURN_NULLS)) {
-        if ($current_row['FELHASZNALONEV'] === $felhasznalonev) {
-            $errors[] = "A felhasználónév már foglalt!";
-        }
-        if ($current_row['EMAIL'] === $email) {
-            $errors[] = "Az e-mail cím már foglalt!";
-        }
-    }
-
-    if (count($errors) === 0) {
-        $jelszo = password_hash($jelszo, PASSWORD_DEFAULT);
-        $ujUtas = oci_parse($utazasiiroda, "INSERT INTO UTAS  (FELHASZNALONEV, EMAIL, JELSZO) VALUES ('$felhasznalonev','$email','$jelszo')");
-        oci_execute($ujUtas) or die('Hiba');
-        header("Location: bejelentkezes.php?reg=true");
-    }
+    $jelszo = htmlspecialchars($_POST['jelszo']);
+    $errors = regisztracio($felhasznalonev, $email, $jelszo);
 }
 ?>
 <!DOCTYPE html>

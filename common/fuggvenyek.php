@@ -12,7 +12,7 @@ function menuGeneralas(string $aktualisOldal) {
         "<li" . ($aktualisOldal === "profil" ? ' class=active' : "") . ">" .
         (isset($_SESSION['user']) === true ? '<a href="profil.php">Profil</a>' : '<a href="bejelentkezes.php">Bejelentkezés/Regisztráció</a>') .
         "</li>" .
-        (isset($_SESSION['user']) === true ? '<li><a href="logout.php">Kijelentkezés</a></li>' : '') .
+        (isset($_SESSION['user']) === true ? '<li><a href="kijelentkezes.php">Kijelentkezés</a></li>' : '') .
         (isset($_SESSION['user']) === true && $_SESSION['user']['felhasznalonev'] === 'admin' ? "<li" . ($aktualisOldal === "admin" ? ' class=active' : "") . '><a href="admin_statisztika.php">Admin</a></li>' : '') .
         "</ul></div></nav>";
 }
@@ -354,7 +354,7 @@ function biztositasListazas() {
         'Hello, én a Jó Biztosító vagyok, és nagyon jó vagyok'];
 
     foreach($biztositok as $biztosito) {
-        $biztositas = oci_parse($utazasiiroda, "SELECT BIZTOSITAS_KATEGORIAK.KATEGORIA, BIZTOSITAS.AR FROM BIZTOSITAS, BIZTOSITO, BIZTOSITAS_KATEGORIAK 
+        $biztositas = oci_parse($utazasiiroda, "SELECT DISTINCT(BIZTOSITAS_KATEGORIAK.KATEGORIA), BIZTOSITAS.AR FROM BIZTOSITAS, BIZTOSITO, BIZTOSITAS_KATEGORIAK 
                                                     WHERE BIZTOSITO.ID=BIZTOSITAS.BIZTOSITOID AND BIZTOSITAS_KATEGORIAK.ID=BIZTOSITAS.ID 
                                                     AND BIZTOSITO.LEIRAS = '$biztosito' ORDER BY BIZTOSITAS_KATEGORIAK.KATEGORIA");
         oci_execute($biztositas) or die('hiba');
@@ -385,7 +385,7 @@ function biztositasokListazas($melyik) {
     include_once('common/connection.php');
     $utazasiiroda = csatlakozas();
 
-    $biztositasok = oci_parse($utazasiiroda, "SELECT DISTINCT(BIZTOSITAS_KATEGORIAK.KATEGORIA) FROM BIZTOSITAS, BIZTOSITO, BIZTOSITAS_KATEGORIAK 
+    $biztositasok = oci_parse($utazasiiroda, "SELECT BIZTOSITAS_KATEGORIAK.KATEGORIA FROM BIZTOSITAS, BIZTOSITO, BIZTOSITAS_KATEGORIAK 
                                                     WHERE BIZTOSITO.ID=BIZTOSITAS.BIZTOSITOID AND BIZTOSITAS_KATEGORIAK.ID=BIZTOSITAS.ID 
                                                     AND BIZTOSITO.LEIRAS LIKE '$melyik' ORDER BY BIZTOSITAS_KATEGORIAK.KATEGORIA");
     oci_execute($biztositasok) or die('HIBA');
@@ -399,4 +399,125 @@ function biztositasokListazas($melyik) {
     }
 
     csatlakozas_zarasa($utazasiiroda);
+}
+
+function regisztracio($felhasznalonev, $email, $jelszo): array {
+    include_once "common/connection.php";
+    include_once "common/fuggvenyek.php";
+    $utazasiiroda = csatlakozas();
+
+    $errors = [];
+
+    $felhasznalok = oci_parse($utazasiiroda, 'SELECT * FROM UTAS');
+    oci_execute($felhasznalok);
+    while ($current_row = oci_fetch_array($felhasznalok, OCI_ASSOC + OCI_RETURN_NULLS)) {
+        if ($current_row['FELHASZNALONEV'] === $felhasznalonev) {
+            $errors[] = "A felhasználónév már foglalt!";
+        }
+        if ($current_row['EMAIL'] === $email) {
+            $errors[] = "Az e-mail cím már foglalt!";
+        }
+    }
+
+    if (count($errors) === 0) {
+        $jelszo = password_hash($jelszo, PASSWORD_DEFAULT);
+        $ujUtas = oci_parse($utazasiiroda, "INSERT INTO UTAS  (FELHASZNALONEV, EMAIL, JELSZO) VALUES ('$felhasznalonev','$email','$jelszo')");
+        oci_execute($ujUtas) or die('Hiba');
+        header("Location: bejelentkezes.php?reg=true");
+    }
+
+    if(isset($felhasznalok) && is_resource($felhasznalok)) {
+        oci_free_statement($felhasznalok);
+    }
+    if(isset($ujUtas) && is_resource($ujUtas)) {
+        oci_free_statement($ujUtas);
+    }
+    csatlakozas_zarasa($utazasiiroda);
+
+    return $errors;
+}
+
+function bejelentkezes($felhasznalonev, $jelszo): bool {
+    include_once('common/connection.php');
+    $utazasiiroda = csatlakozas();
+
+    $error = false;
+    $felhasznalo_adat = array();
+    $bejelentkezve = false;
+
+    $felhasznalok = oci_parse($utazasiiroda, 'SELECT * FROM UTAS');
+    oci_execute($felhasznalok);
+    while ($current_row = oci_fetch_array($felhasznalok, OCI_ASSOC + OCI_RETURN_NULLS)) {
+        if ($felhasznalonev === $current_row["FELHASZNALONEV"] && password_verify($jelszo, $current_row["JELSZO"])) {
+            $bejelentkezve = true;
+            $felhasznalo_adat["felhasznalonev"] = $current_row["FELHASZNALONEV"];
+            $felhasznalo_adat["email"] = $current_row["EMAIL"];
+            break;
+        }
+    }
+
+    if ($bejelentkezve) {
+        $_SESSION["user"] = $felhasznalo_adat;
+        header("Location: profil.php?login=true");
+    } else {
+        $error = true;
+    }
+
+    if(isset($felhasznalok) && is_resource($felhasznalok)) {
+        oci_free_statement($felhasznalok);
+    }
+    csatlakozas_zarasa($utazasiiroda);
+
+    return $error;
+}
+
+function legitarsasagErtekelo() {
+    echo '<div id="legitarsasagi-ertekeles" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="bezaras">&times;</span>
+                    <h2>Légitársasági értékelés</h2>
+                    <p>Ossza meg tapasztalatait legutóbbi utazásáról és értékelje a járatokat üzemeltető légitársaságot. Töltse ki a lenti kérdőívet, ezzel segítve a légitársaságok munkáját és más utazókat a tájékozódásban.</p>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="profil.php">
+                        <fieldset>
+                            <legend>1. A repülőút adatai</legend>
+                            <label for="melyik-legitarsasag">Melyik légitársasággal utazott?</label>
+                            <br/><select id="melyik-legitarsasag" name="legitarsasag">
+                                <?php legitarsasagListazas(); ?>
+                            </select><br/>
+
+                            <label for="mikor">Mikor utazott?</label>
+                            <br/><input type="date" id="mikor" name="mikor" required/>
+                        </fieldset>
+                        <fieldset>
+                            <legend>2. A légitársaság értékelése</legend>
+                            <label for="szemelyzet">A személyzet munkája</label>
+                            <p>Mennyire volt elégedett a személyzet munkájával? Mennyire volt segítőkész, hozzáértő, udvarias a személyzet? (1-5)</p>
+                            <br/><input type="range" id="szemelyzet" name="szemelyzet" min="1" max="5"/> <br/>
+                            <label for="szolgaltatas">A fedélzeti szolgáltatások színvonala</label>
+                            <p>Mennyire volt elégedett a fedélzeti szolgáltatások színvonalával? Mennyire volt elégedett az ételek és az italok minőségével? Mennyire volt kényelmes az ülés? Volt szórakoztatórendszer a fedélzeten? (1-5)</p>
+                            <br/><input type="range" id="szolgaltatas" name="szolgaltatas" min="1" max="5"/> <br/>
+                            <label for="menetrend">A menetrend</label>
+                            <p>Mennyire volt megfelelő Önnek a járat menetrendje? Pontosan indult és érkezett a repülőgép? (1-5)</p>
+                            <br/><input type="range" id="menetrend" name="menetrend" min="1" max="5"/> <br/>
+                            <label for="ar-ertek">Az ár-érték arány</label>
+                            <p>Mennyire felelt meg a légitársaság által nyújtott szolgáltatás színvonala a repülőjegy árához képest? Azt kapta, amit az árért elvárt? (1-5)</p>
+                            <br/><input type="range" id="ar-ertek" name="ar-ertek" min="1" max="5"/> <br/>
+                        </fieldset>
+                        <fieldset>
+                            <legend>3. Szöveges értékelés</legend>
+                            <label for="szoveges-ertekeles">Ide írja élménybeszámolóját!</label>
+                            <br/><textarea rows="4" cols="50" id="szoveges-ertekeles" name="szoveges-ertekeles"></textarea><br/>
+                        </fieldset>
+                        <fieldset>
+                            <legend>Köszönjük, hogy részt vett az értékelésben!</legend>
+                            <br/><input type="submit" id="modal-ertekeles" name="ertekeles" value="Elküld"/>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <script src="js/modal.js"></script>';
 }
