@@ -127,9 +127,6 @@ if(isset($_POST['egyiranyu-kereses'])) {
         </div>
     </div>
 </main>
-<?php
-    include_once("common/footer.php");
-?>
 </body>
 </html>
 <?php
