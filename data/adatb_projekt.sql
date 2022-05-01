@@ -4,7 +4,7 @@ CREATE OR REPLACE TYPE TABLAK_TYPE IS VARRAY(8) OF VARCHAR2(30);
 /
 DECLARE
     C NUMBER;
-    TABLAK TABLAK_TYPE := TABLAK_TYPE('ERTEKEL', 'JEGY', 'JARAT', 'LEGITARSASAG', 'BIZTOSITAS', 'UTAS', 'BIZTOSITAS_KATEGORIAK', 'BIZTOSITO');
+    TABLAK TABLAK_TYPE := TABLAK_TYPE('ERTEKEL', 'JEGY', 'JARAT', 'LEGITARSASAG', 'BIZTOSITAS', 'BIZTOSITAS_KATEGORIAK', 'UTAS', 'BIZTOSITO');
     PROCEDURE TOROL_HA_VAN(TABLAK_P IN TABLAK_TYPE) IS
 BEGIN
     FOR I IN 1..TABLAK.COUNT LOOP
@@ -115,24 +115,31 @@ INSERT INTO BIZTOSITO VALUES(1002, 'Üdv, én a Megbízható Biztosító vagyok,
 INSERT INTO BIZTOSITO VALUES(1003, 'Hello, én az Olcsó Biztosító vagyok, és nagyon olcsó vagyok');
 INSERT INTO BIZTOSITO VALUES(1004, 'Üdv, én a Legjobb Biztosító vagyok, és én vagyok a legjobb');
 INSERT INTO BIZTOSITO VALUES(1005, 'Hello, én a Jó Biztosító vagyok, és nagyon jó vagyok');
---BIZTOSITASOK
+
+
+--BIZTOSITAS_KATEGORIAK
+CREATE OR REPLACE TYPE KATEGORIAK_TYPE IS VARRAY(7) OF VARCHAR2(30);
+/
 DECLARE
+    KATEG_V pls_integer;
     AR_V pls_integer;
     BIZTOSITO_V pls_integer;
-    DATUM_V DATE;
-    PROCEDURE BIZTOSITAS_FELTOLT IS
+    KATEGORIAK KATEGORIAK_TYPE := KATEGORIAK_TYPE('jogvédelem', 'poggyászbiztosítás', 'balesetbiztosítás lvl1',   'balesetbiztosítás lvl2', 'balesetbiztosítás lvl3', 'balesetbiztosítás lvl4', 'balesetbiztosítás lvl5');
+    PROCEDURE KATEG_FELTOLT(KATEG_P IN KATEGORIAK_TYPE) IS
 BEGIN
     FOR I IN 2001..2100 LOOP
-                AR_V := DBMS_RANDOM.VALUE(15000, 90000);
-    SELECT TO_DATE(TRUNC(DBMS_RANDOM.VALUE(TO_CHAR(DATE '2021-01-01','J'), TO_CHAR(DATE '2022-04-20','J'))),'J') INTO DATUM_V FROM DUAL;
     BIZTOSITO_V := DBMS_RANDOM.VALUE(1001, 1005);
-    INSERT INTO BIZTOSITAS VALUES(I, AR_V, DATUM_V, BIZTOSITO_V );
+    AR_V := DBMS_RANDOM.VALUE(15000, 90000);
+    KATEG_V := DBMS_RANDOM.VALUE(1,7);
+    INSERT INTO BIZTOSITAS_KATEGORIAK VALUES(I, BIZTOSITO_V, KATEGORIAK(KATEG_V), AR_V);
 END LOOP;
 END;
 BEGIN
-    BIZTOSITAS_FELTOLT;
+    KATEG_FELTOLT(KATEGORIAK);
 END;
 /
+
+
 --UTASOK
 INSERT INTO UTAS VALUES('Admin01', 'admin01@gmail.com', 'admin');
 INSERT INTO UTAS VALUES('Admin02', 'admin02@gmail.com', 'admin');
@@ -144,6 +151,32 @@ INSERT INTO UTAS VALUES('User02', 'user02@gmail.com',   'admin');
 INSERT INTO UTAS VALUES('User03', 'user03@freemail.hu', 'admin');
 INSERT INTO UTAS VALUES('User04', 'user04@freemail.hu', 'admin');
 INSERT INTO UTAS VALUES('User05', 'user05@freemail.hu', 'admin');
+
+
+--BIZTOSITASOK
+DECLARE
+    AR_V pls_integer;
+    BIZTOSITO_V pls_integer;
+    KATEG_V pls_integer;
+    DATUM_V DATE;   
+    R_V pls_integer;
+    UTAS_V UTAS_TYPE := UTAS_TYPE('Admin01', 'Admin02', 'Admin03', 'Admin04', 'Admin05', 'User01', 'User02', 'User03', 'User04', 'User05');   
+    PROCEDURE BIZTOSITAS_FELTOLT IS
+    BEGIN
+        FOR I IN 2001..2100 LOOP
+        AR_V := DBMS_RANDOM.VALUE(15000, 90000);
+        SELECT TO_DATE(TRUNC(DBMS_RANDOM.VALUE(TO_CHAR(DATE '2021-01-01','J'), TO_CHAR(DATE '2022-04-20','J'))),'J') INTO DATUM_V FROM DUAL;
+        BIZTOSITO_V := DBMS_RANDOM.VALUE(1001, 1005);
+        KATEG_V := DBMS_RANDOM.VALUE(2001, 2100);
+        R_V := DBMS_RANDOM.VALUE(1, 10);
+        INSERT INTO BIZTOSITAS VALUES(I, BIZTOSITO_V, KATEG_V, DATUM_V, AR_V, UTAS_V(R_V));
+        END LOOP;
+    END;
+BEGIN
+    BIZTOSITAS_FELTOLT;
+END;
+/
+
 --LEGITARSASAGOK
 INSERT INTO LEGITARSASAG VALUES('Léggitársaság Zrt.', 'Repülő Róbert', 'Pápa');
 INSERT INTO LEGITARSASAG VALUES('Csak felfelé Rt.', 'Szálló Szilárd', 'Boba');
@@ -172,11 +205,13 @@ INSERT INTO JARAT VALUES(1018, 0, 45, 3, TO_TIMESTAMP('2022 01 02 18:00:00','YYY
 INSERT INTO JARAT VALUES(1019, 0,  9, 3, TO_TIMESTAMP('2022 01 02 19:00:00','YYYY MM DD HH24:MI:SS'), TO_TIMESTAMP('2022 01 02 23:30:00','YYYY MM DD HH24:MI:SS'), 'Szeged', 'Párizs', 'Lufthansa', 76337);
 INSERT INTO JARAT VALUES(1020, 0, 78, 4, TO_TIMESTAMP('2022 01 02 20:00:00','YYYY MM DD HH24:MI:SS'), TO_TIMESTAMP('2022 01 03 00:30:00','YYYY MM DD HH24:MI:SS'), 'Budapest', 'Párizs', 'Csak felfelé Rt.', 94877);
 INSERT INTO JARAT VALUES(1021, 0,  8, 4, TO_TIMESTAMP('2022 01 03 10:00:00','YYYY MM DD HH24:MI:SS'), TO_TIMESTAMP('2022 01 03 14:30:00','YYYY MM DD HH24:MI:SS'), 'Berlin', 'Szeged', 'Turbina Rt.', 76901);
+
 --JEGYEK
 CREATE OR REPLACE TYPE UTAS_TYPE IS VARRAY(10) OF VARCHAR2(20);
 /
 DECLARE
     AR_V pls_integer;
+    TIPUS_V pls_integer;
     UTAS_V UTAS_TYPE := UTAS_TYPE('Admin01', 'Admin02', 'Admin03', 'Admin04', 'Admin05', 'User01', 'User02', 'User03', 'User04', 'User05');
     R_V pls_integer;
     JARAT_V pls_integer;
@@ -185,31 +220,17 @@ BEGIN
     FOR I IN 1..50 LOOP
                 AR_V := DBMS_RANDOM.VALUE(10000, 30000);
     R_V := DBMS_RANDOM.VALUE(1, 10);
+    TIPUS_V := DBMS_RANDOM.VALUE(0, 1);
     JARAT_V := DBMS_RANDOM.VALUE(1001, 1021);
-    INSERT INTO JEGY VALUES(I, AR_V, UTAS_V(R_V), JARAT_V);
+    INSERT INTO JEGY VALUES(I, AR_V, TIPUS_V, UTAS_V(R_V), JARAT_V);
 END LOOP;
 END;
 BEGIN
     JEGY_FELTOLT;
 END;
 /
---BIZTOSITAS_KATEGORIAK
-CREATE OR REPLACE TYPE KATEGORIAK_TYPE IS VARRAY(7) OF VARCHAR2(30);
-/
-DECLARE
-    KATEG_V pls_integer;
-    KATEGORIAK KATEGORIAK_TYPE := KATEGORIAK_TYPE('jogvédelem', 'poggyászbiztosítás', 'balesetbiztosítás lvl1',   'balesetbiztosítás lvl2', 'balesetbiztosítás lvl3', 'balesetbiztosítás lvl4', 'balesetbiztosítás lvl5');
-    PROCEDURE KATEG_FELTOLT(KATEG_P IN KATEGORIAK_TYPE) IS
-BEGIN
-    FOR I IN 2001..2100 LOOP
-                KATEG_V := DBMS_RANDOM.VALUE(1,7);
-    INSERT INTO BIZTOSITAS_KATEGORIAK VALUES(I, KATEGORIAK(KATEG_V));
-END LOOP;
-END;
-BEGIN
-    KATEG_FELTOLT(KATEGORIAK);
-END;
-/
+
+
 --ERTEKELESEK
 CREATE OR REPLACE TYPE UTAS_TYPE IS VARRAY(10) OF VARCHAR2(20);
 /
@@ -240,38 +261,39 @@ FOR EACH ROW
 BEGIN
     UPDATE BIZTOSITAS SET BIZTOSITOID = :NEW.ID
     WHERE BIZTOSITOID = :OLD.ID;
+    
+    UPDATE BIZTOSITAS_KATEGORIAK SET BIZTOSITOID = :NEW.ID
+    WHERE BIZTOSITOID = :OLD.ID;
 END;
 /
-CREATE OR REPLACE TRIGGER i_biztositas
-    BEFORE UPDATE OF ID ON BIZTOSITAS
-FOR EACH ROW
-BEGIN
-    UPDATE UTAS SET BIZTOSITASID = :NEW.ID
-    WHERE BIZTOSITASID = :OLD.ID;
-    UPDATE BIZTOSITAS_KATEGORIAK SET ID = :NEW.ID
-    WHERE ID = :OLD.ID;
-END;
-/
+
 CREATE OR REPLACE TRIGGER i_legitarsasag
     BEFORE UPDATE OF NEVE ON LEGITARSASAG
 FOR EACH ROW
 BEGIN
     UPDATE JARAT SET LEGITARSASAG = :NEW.NEVE
     WHERE LEGITARSASAG = :OLD.NEVE;
+    
     UPDATE ERTEKEL SET LEGITARSASAG = :NEW.NEVE
     WHERE LEGITARSASAG = :OLD.NEVE;
 END;
 /
+
 CREATE OR REPLACE TRIGGER i_utas
     BEFORE UPDATE OF FELHASZNALONEV ON UTAS
 FOR EACH ROW
 BEGIN
     UPDATE JEGY SET FELHASZNALONEV = :NEW.FELHASZNALONEV
     WHERE FELHASZNALONEV = :OLD.FELHASZNALONEV;
+    
     UPDATE ERTEKEL SET FELHASZNALONEV = :NEW.FELHASZNALONEV
+    WHERE FELHASZNALONEV = :OLD.FELHASZNALONEV;
+    
+    UPDATE BIZTOSITAS SET FELHASZNALONEV = :NEW.FELHASZNALONEV
     WHERE FELHASZNALONEV = :OLD.FELHASZNALONEV;
 END;
 /
+
 CREATE OR REPLACE TRIGGER i_jarat
     BEFORE UPDATE OF JARATSZAM ON JARAT
 FOR EACH ROW
@@ -289,6 +311,7 @@ DROP TABLE JARAT_LOG;
 DROP TABLE JEGY_LOG;
 DROP TABLE BIZTOSITAS_KATEGORIAK_LOG;
 DROP TABLE ERTEKEL_LOG;
+
 CREATE TABLE BIZTOSITO_LOG (datum DATE, leiras VARCHAR2(400));
 CREATE TABLE BIZTOSITAS_LOG (datum DATE, leiras VARCHAR2(400));
 CREATE TABLE UTAS_LOG (datum DATE, leiras VARCHAR2(400));
@@ -312,6 +335,7 @@ BEGIN
         action_v := 'Hozzáadva';
         id_v := :NEW.id;
         change_v := '';
+        
     ELSIF UPDATING THEN
         action_v := 'Frissítve';
         id_v := :NEW.id;
@@ -345,33 +369,41 @@ DECLARE
 BEGIN
     IF INSERTING THEN
         action_v := 'Hozzáadva';
-        id_v := :NEW.id;
+        id_v := :NEW.BIZTOSITASID;
         change_v := '';
 
     ELSIF UPDATING THEN
         action_v := 'Frissítve';
-        id_v := :NEW.id;
+        id_v := :NEW.BIZTOSITASID;
         change_v := ': ';
 
-        IF NVL(:OLD.id, -1) != NVL(:NEW.id, -1) THEN
+        IF NVL(:OLD.BIZTOSITASID, -1) != NVL(:NEW.BIZTOSITASID, -1) THEN
             change_v := change_v || 'ID';
-        END IF;
-
-        IF NVL(:OLD.AR, -1) != NVL(:NEW.AR, -1) THEN
-            change_v := change_v || 'AR';
-        END IF;
-
-        IF NVL(TO_CHAR(:OLD.DATUM,'YYYY MM DD HH24:MI:SS'),'NA') != NVL(TO_CHAR(:NEW.DATUM,'YYYY MM DD HH24:MI:SS'),'NA') THEN
-            change_v := change_v || 'DATUM';
         END IF;
 
         IF NVL(:OLD.BIZTOSITOID, -1) != NVL(:NEW.BIZTOSITOID, -1) THEN
             change_v := change_v || 'BIZTOSITOID';
         END IF;
 
+        IF NVL(:OLD.KATEGORIAID, '-null-') != NVL(:NEW.KATEGORIAID, '-null-') THEN
+            change_v := change_v || 'KATEGORIAID';
+        END IF;
+        
+        IF NVL(TO_CHAR(:OLD.DATUM,'YYYY MM DD HH24:MI:SS'),'NA') != NVL(TO_CHAR(:NEW.DATUM,'YYYY MM DD HH24:MI:SS'),'NA') THEN
+            change_v := change_v || 'DATUM';
+        END IF;
+        
+        IF NVL(:OLD.AR, -1) != NVL(:NEW.AR, -1) THEN
+            change_v := change_v || 'AR';
+        END IF;
+
+        IF NVL(:OLD.FELHASZNALONEV, '-null-') != NVL(:NEW.FELHASZNALONEV, '-null-') THEN
+            change_v := change_v || 'FELHASZNALONEV';
+        END IF;
+        
     ELSIF DELETING THEN
         action_v := 'Törölve';
-        id_v := :OLD.id;
+        id_v := :OLD.BIZTOSITASID;
         change_v := '';
     END IF;
     INSERT INTO BIZTOSITAS_LOG VALUES (SYSDATE, action_v || ' ' || id_v || ' számú bíztosítás ' ||  change_v);
@@ -408,10 +440,6 @@ BEGIN
 
         IF NVL(:OLD.JELSZO, '-null-') != NVL(:NEW.JELSZO, '-null-') THEN
             change_v := change_v || 'JELSZO';
-        END IF;
-
-        IF NVL(:OLD.BIZTOSITASID, -1) != NVL(:NEW.BIZTOSITASID, -1) THEN
-            change_v := change_v || 'BIZTOSITASID';
         END IF;
     ELSIF DELETING THEN
         action_v := 'Törölve';
@@ -561,6 +589,7 @@ BEGIN
     INSERT INTO JEGY_LOG VALUES (SYSDATE, action_v || ' ' || id_v || ' számú jegy ' ||  change_v);
 END;
 /
+
 CREATE OR REPLACE TRIGGER BIZTOSITAS_KATEGORIAK_LOG_TR
     AFTER INSERT OR UPDATE OR DELETE
     ON BIZTOSITAS_KATEGORIAK
