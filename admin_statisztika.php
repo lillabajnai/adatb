@@ -53,16 +53,16 @@ menuGeneralas('admin');
                         }
                     ?></td>
                 </tr>
-                <tr>
-                    <td style="text-align: left; display: list-item;">Átlagos poggyászbiztosítás ár:</td>
-                    <td><?php
-                        $stat = oci_parse($utazasiiroda,"SELECT ROUND(AVG(BIZTOSITAS.AR)) AS ATLAG_AR FROM BIZTOSITAS, BIZTOSITAS_KATEGORIAK WHERE BIZTOSITAS_KATEGORIAK.ID = BIZTOSITAS.ID AND KATEGORIA = 'poggyászbiztosítás'");
-                        oci_execute($stat) or die ('Hiba');
-                        while ($current_row = oci_fetch_array($stat, OCI_ASSOC + OCI_RETURN_NULLS)) {
-                            echo number_format($current_row['ATLAG_AR']) , ' Ft';
-                        }
-                    ?></td>
-                </tr>
+<!--                <tr>-->
+<!--                    <td style="text-align: left; display: list-item;">Átlagos poggyászbiztosítás ár:</td>-->
+<!--                    <td>--><?php
+//                        $stat = oci_parse($utazasiiroda,"SELECT ROUND(AVG(BIZTOSITAS_KATEGORIAK.AR)) AS ATLAG_AR FROM BIZTOSITAS, BIZTOSITAS_KATEGORIAK WHERE BIZTOSITAS_KATEGORIAK.ID = BIZTOSITAS.KATEGORIAID AND KATEGORIA = 'poggyászbiztosítás'");
+//                        oci_execute($stat) or die ('Hiba');
+//                        while ($current_row = oci_fetch_array($stat, OCI_ASSOC + OCI_RETURN_NULLS)) {
+//                            echo number_format($current_row['ATLAG_AR']) , ' Ft';
+//                        }
+//                    ?><!--</td>-->
+<!--                </tr>-->
                 <tr>
                     <td style="text-align: left; display: list-item;">Adott utas legutolsó utazása:</td>
                     <td><?php
@@ -120,8 +120,8 @@ menuGeneralas('admin');
                 <tr>
                     <td style="text-align: left; display: list-item;">Legtöbbet vásárolt biztosításkategória:</td>
                     <td><?php
-                        $stat = oci_parse($utazasiiroda,"SELECT KATEGORIA, COUNT(BIZTOSITAS_KATEGORIAK.ID) AS DARAB FROM BIZTOSITAS, BIZTOSITAS_KATEGORIAK
-                                                                    WHERE BIZTOSITAS.ID = BIZTOSITAS_KATEGORIAK.ID
+                        $stat = oci_parse($utazasiiroda,"SELECT KATEGORIA, COUNT(BIZTOSITAS.KATEGORIAID) AS DARAB FROM BIZTOSITAS, BIZTOSITAS_KATEGORIAK
+                                                                    WHERE BIZTOSITAS.KATEGORIAID = BIZTOSITAS_KATEGORIAK.ID
                                                                     GROUP BY KATEGORIA
                                                                     ORDER BY DARAB DESC
                                                                     FETCH FIRST 1 ROW ONLY");
@@ -136,7 +136,7 @@ menuGeneralas('admin');
                     <td style="text-align: left; display: list-item;">Adott biztosító biztosítását hányan vették meg:</td>
                     <td><?php
                         $stat = oci_parse($utazasiiroda,"SELECT BIZTOSITAS_KATEGORIAK.KATEGORIA, COUNT(BIZTOSITAS_KATEGORIAK.ID) AS DARAB FROM BIZTOSITAS_KATEGORIAK, BIZTOSITO, BIZTOSITAS
-                                                                    WHERE BIZTOSITAS_KATEGORIAK.ID = BIZTOSITAS.ID AND BIZTOSITO.ID = BIZTOSITAS.BIZTOSITOID AND BIZTOSITAS.BIZTOSITOID=1001
+                                                                    WHERE BIZTOSITAS_KATEGORIAK.ID = BIZTOSITAS.KATEGORIAID AND BIZTOSITO.ID = BIZTOSITAS.BIZTOSITOID AND BIZTOSITAS.BIZTOSITOID=1001
                                                                     GROUP BY BIZTOSITAS_KATEGORIAK.KATEGORIA");
                         oci_execute($stat) or die ('Hiba');
                         while ($current_row = oci_fetch_array($stat, OCI_ASSOC + OCI_RETURN_NULLS)) {

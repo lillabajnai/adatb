@@ -274,27 +274,25 @@ function logListazas() {
     foreach($naplok as $log) {
         $naplo = oci_parse($utazasiiroda, "SELECT * FROM $log");
         oci_execute($naplo);
-        oci_fetch($naplo);
-        if(oci_num_rows($naplo) !== 0) {
-            $nfields = oci_num_fields($naplo);
-            echo '<table><caption>' . $log . '</caption>';
+
+        $nfields = oci_num_fields($naplo);
+        echo '<table><caption>' . $log . '</caption>';
+        echo '<tr>';
+        for ($i = 1; $i<=$nfields; $i++){
+            $field = oci_field_name($naplo, $i);
+            echo '<th>' . $field . '</th>';
+        }
+        echo '</tr>';
+
+        oci_execute($naplo);
+        while ( $row = oci_fetch_array($naplo, OCI_ASSOC + OCI_RETURN_NULLS)) {
             echo '<tr>';
-            for ($i = 1; $i<=$nfields; $i++){
-                $field = oci_field_name($naplo, $i);
-                echo '<th>' . $field . '</th>';
+            foreach ($row as $item) {
+                echo '<td>' . $item . '</td>';
             }
             echo '</tr>';
-
-            oci_execute($naplo);
-            while ( $row = oci_fetch_array($naplo, OCI_ASSOC + OCI_RETURN_NULLS)) {
-                echo '<tr>';
-                foreach ($row as $item) {
-                    echo '<td>' . $item . '</td>';
-                }
-                echo '</tr>';
-            }
-            echo '</table>';
         }
+        echo '</table>';
     }
 
     if(isset($naplo) && is_resource($naplo)) {
@@ -354,9 +352,9 @@ function biztositasListazas() {
         'Hello, én a Jó Biztosító vagyok, és nagyon jó vagyok'];
 
     foreach($biztositok as $biztosito) {
-        $biztositas = oci_parse($utazasiiroda, "SELECT DISTINCT(BIZTOSITAS_KATEGORIAK.KATEGORIA), BIZTOSITAS.AR FROM BIZTOSITAS, BIZTOSITO, BIZTOSITAS_KATEGORIAK 
-                                                    WHERE BIZTOSITO.ID=BIZTOSITAS.BIZTOSITOID AND BIZTOSITAS_KATEGORIAK.ID=BIZTOSITAS.ID 
-                                                    AND BIZTOSITO.LEIRAS = '$biztosito' ORDER BY BIZTOSITAS_KATEGORIAK.KATEGORIA");
+        $biztositas = oci_parse($utazasiiroda, "SELECT BIZTOSITAS_KATEGORIAK.KATEGORIA, BIZTOSITAS_KATEGORIAK.AR FROM BIZTOSITAS_KATEGORIAK, BIZTOSITO WHERE  
+                                                        BIZTOSITAS_KATEGORIAK.BIZTOSITOID = BIZTOSITO.ID AND
+                                                        BIZTOSITO.LEIRAS = '$biztosito' ORDER BY BIZTOSITAS_KATEGORIAK.KATEGORIA");
         oci_execute($biztositas) or die('hiba');
 
         echo '<table id="biztositas-table">';
@@ -385,13 +383,13 @@ function biztositasokListazas($melyik) {
     include_once('common/connection.php');
     $utazasiiroda = csatlakozas();
 
-    $biztositasok = oci_parse($utazasiiroda, "SELECT BIZTOSITAS_KATEGORIAK.KATEGORIA FROM BIZTOSITAS, BIZTOSITO, BIZTOSITAS_KATEGORIAK 
-                                                    WHERE BIZTOSITO.ID=BIZTOSITAS.BIZTOSITOID AND BIZTOSITAS_KATEGORIAK.ID=BIZTOSITAS.ID 
-                                                    AND BIZTOSITO.LEIRAS LIKE '$melyik' ORDER BY BIZTOSITAS_KATEGORIAK.KATEGORIA");
-    oci_execute($biztositasok) or die('HIBA');
+    $biztositasok = oci_parse($utazasiiroda, "SELECT BIZTOSITAS_KATEGORIAK.ID, BIZTOSITAS_KATEGORIAK.KATEGORIA, BIZTOSITAS_KATEGORIAK.AR FROM BIZTOSITAS_KATEGORIAK, BIZTOSITO WHERE  
+                                                        BIZTOSITAS_KATEGORIAK.BIZTOSITOID = BIZTOSITO.ID AND 
+                                                        BIZTOSITO.LEIRAS LIKE '$melyik' ORDER BY BIZTOSITAS_KATEGORIAK.KATEGORIA");
+    oci_execute($biztositasok);
 
     while ($current_row = oci_fetch_array($biztositasok, OCI_ASSOC + OCI_RETURN_NULLS)) {
-        echo '<option value="'. $current_row["KATEGORIA"] . '"' . '>' . $current_row["KATEGORIA"] . '</option>';
+        echo '<option value="'. $current_row["ID"] . '"' . '>' . $current_row["KATEGORIA"] . ' (+' . number_format($current_row['AR']) . ' Ft)' . '</option>';
     }
 
     if(isset($biztositasok) && is_resource($biztositasok)) {
@@ -469,4 +467,30 @@ function bejelentkezes($felhasznalonev, $jelszo): bool {
     csatlakozas_zarasa($utazasiiroda);
 
     return $error;
+}
+
+function biztositasKotes($felhasznalonev, $biztositoID, $biztositasID, $datum) {
+    include_once('common/connection.php');
+    $utazasiiroda = csatlakozas();
+
+    $ar_lekerdezes = oci_parse($utazasiiroda, "SELECT AR FROM BIZTOSITAS_KATEGORIAK WHERE ID='$biztositasID'");
+    oci_execute($ar_lekerdezes) or die('Hiba');
+
+    while ($current_row = oci_fetch_array($ar_lekerdezes, OCI_ASSOC + OCI_RETURN_NULLS)) {
+        $ar = $current_row["AR"];
+    }
+
+    $biztositasKotes = oci_parse($utazasiiroda, "INSERT INTO BIZTOSITAS(BIZTOSITOID, KATEGORIAID, DATUM, AR, FELHASZNALONEV) VALUES ('$biztositoID', '$biztositasID', '$datum', '$ar', '$felhasznalonev')") or die ('Hibás utasítás!');
+    oci_execute($biztositasKotes) or die('Hiba');
+    header("Location: profil.php?biztositasKotes=true");
+
+    if(isset($biztositasKotes) && is_resource($biztositasKotes)) {
+        oci_free_statement($biztositasKotes);
+    }
+
+    if(isset($ar_lekerdezes) && is_resource($ar_lekerdezes)) {
+        oci_free_statement($ar_lekerdezes);
+    }
+
+    csatlakozas_zarasa($utazasiiroda);
 }
