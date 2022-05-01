@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL ^ E_NOTICE);
 session_status() === PHP_SESSION_ACTIVE || session_start();
 
 if(!isset($_SESSION["user"]) || empty($_SESSION["user"])){

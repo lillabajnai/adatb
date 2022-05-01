@@ -142,7 +142,16 @@ if(isset($_POST['biztositas-1-kotes']) || isset($_POST['biztositas-2-kotes']) ||
                 <div class="modal-body">
                     <?php biztositasListazas(); ?>
                     <form method="POST" action="profil.php">
-
+                        <div id="szabaly-checkbox">
+                            <label for="szabalyzat-elfogadas">
+                                <input type="checkbox" id="szabalyzat-elfogadas" name="szabalyzat" required>
+                                A biztosítás megkötésével elfogadom az irinyiutazasiiroda.hu szabályzatát.
+                            </label> <br/>
+                            <label for="18-felett">
+                                <input type="checkbox" id="18-felett" name="szabalyzat" required>
+                                Büntetőjogi felelősségem teljes tudatában kijelentem, hogy elmúltam 18 éves.
+                            </label> <br/>
+                        </div>
                         <div class="biztosito">
                             <input type="radio" id="biztosito-1" name="biztosito">
                             <label for="biztosito-1">Biztonságos Biztosító</label>
@@ -150,18 +159,9 @@ if(isset($_POST['biztositas-1-kotes']) || isset($_POST['biztositas-2-kotes']) ||
                             <div class="biztositas-1">
                                 <label for="kategoria-1">Kategória:</label>
                                 <select id="kategoria-1" name="kategoria-1" class="require-if-active" data-require-pair="biztosito">
+                                    <option disabled selected>Nincs kiválasztva</option>
                                     <?php biztositasokListazas('Hello, én a Biztonságos Biztosító vagyok, és nagyon biztonságos vagyok');?>
                                 </select>
-                                <div id="szabaly-checkbox">
-                                    <label for="szabalyzat-elfogadas">
-                                        <input type="checkbox" id="szabalyzat-elfogadas" name="szabalyzat" required>
-                                        A biztosítás megkötésével elfogadom az irinyiutazasiiroda.hu szabályzatát.
-                                    </label> <br/>
-                                    <label for="18-felett">
-                                        <input type="checkbox" id="18-felett" name="szabalyzat" required>
-                                        Büntetőjogi felelősségem teljes tudatában kijelentem, hogy elmúltam 18 éves.
-                                    </label> <br/>
-                                </div>
                                 <input type="hidden" name="biztositoID-1" value="1001"/>
                                 <input type="submit" value="Megkötés" name="biztositas-1-kotes"/>
                             </div>
@@ -174,18 +174,9 @@ if(isset($_POST['biztositas-1-kotes']) || isset($_POST['biztositas-2-kotes']) ||
                             <div class="biztositas-2">
                                 <label for="kategoria-2">Kategória:</label>
                                 <select id="kategoria-2" name="kategoria-2" class="require-if-active" data-require-pair="#biztosito">
+                                    <option disabled selected>Nincs kiválasztva</option>
                                     <?php biztositasokListazas('Üdv, én a Megbízható Biztosító vagyok, és nagyon megbízható vagyok');?>
                                 </select>
-                                <div id="szabaly-checkbox">
-                                    <label for="szabalyzat-elfogadas">
-                                        <input type="checkbox" id="szabalyzat-elfogadas" name="szabalyzat" required>
-                                        A biztosítás megkötésével elfogadom az irinyiutazasiiroda.hu szabályzatát.
-                                    </label> <br/>
-                                    <label for="18-felett">
-                                        <input type="checkbox" id="18-felett" name="szabalyzat" required>
-                                        Büntetőjogi felelősségem teljes tudatában kijelentem, hogy elmúltam 18 éves.
-                                    </label> <br/>
-                                </div>
                                 <input type="hidden" name="biztositoID-2" value="1002"/>
                                 <input type="submit" value="Megkötés" name="biztositas-2-kotes"/>
                             </div>
@@ -198,18 +189,9 @@ if(isset($_POST['biztositas-1-kotes']) || isset($_POST['biztositas-2-kotes']) ||
                             <div class="biztositas-3">
                                 <label for="kategoria-3">Kategória:</label>
                                 <select id="kategoria-3" name="kategoria-3" class="require-if-active" data-require-pair="#biztosito">
+                                    <option disabled selected>Nincs kiválasztva</option>
                                     <?php biztositasokListazas('Hello, én az Olcsó Biztosító vagyok, és nagyon olcsó vagyok');?>
                                 </select>
-                                <div id="szabaly-checkbox">
-                                    <label for="szabalyzat-elfogadas">
-                                        <input type="checkbox" id="szabalyzat-elfogadas" name="szabalyzat" required>
-                                        A biztosítás megkötésével elfogadom az irinyiutazasiiroda.hu szabályzatát.
-                                    </label> <br/>
-                                    <label for="18-felett">
-                                        <input type="checkbox" id="18-felett" name="szabalyzat" required>
-                                        Büntetőjogi felelősségem teljes tudatában kijelentem, hogy elmúltam 18 éves.
-                                    </label> <br/>
-                                </div>
                                 <input type="hidden" name="biztositoID-3" value="Hello, én az Olcsó Biztosító vagyok, és nagyon olcsó vagyok"/>
                                 <input type="submit" value="Megkötés" name="1003"/>
                             </div>
@@ -222,18 +204,9 @@ if(isset($_POST['biztositas-1-kotes']) || isset($_POST['biztositas-2-kotes']) ||
                             <div class="biztositas-4">
                                 <label for="kategoria-4">Kategória:</label>
                                 <select id="kategoria-4" name="kategoria-4" class="require-if-active" data-require-pair="#biztosito">
+                                    <option disabled selected>Nincs kiválasztva</option>
                                     <?php biztositasokListazas('Üdv, én a Legjobb Biztosító vagyok, és én vagyok a legjobb');?>
                                 </select>
-                                <div id="szabaly-checkbox">
-                                    <label for="szabalyzat-elfogadas">
-                                        <input type="checkbox" id="szabalyzat-elfogadas" name="szabalyzat" required>
-                                        A biztosítás megkötésével elfogadom az irinyiutazasiiroda.hu szabályzatát.
-                                    </label> <br/>
-                                    <label for="18-felett">
-                                        <input type="checkbox" id="18-felett" name="szabalyzat" required>
-                                        Büntetőjogi felelősségem teljes tudatában kijelentem, hogy elmúltam 18 éves.
-                                    </label> <br/>
-                                </div>
                                 <input type="hidden" name="biztositoID-4" value="1004"/>
                                 <input type="submit" value="Megkötés" name="biztositas-4-kotes"/>
                             </div>
@@ -246,18 +219,9 @@ if(isset($_POST['biztositas-1-kotes']) || isset($_POST['biztositas-2-kotes']) ||
                             <div class="biztositas-5">
                                 <label for="kategoria-5">Kategória:</label>
                                 <select id="kategoria-5" name="kategoria-5" class="require-if-active" data-require-pair="#biztosito">
+                                    <option disabled selected>Nincs kiválasztva</option>
                                     <?php biztositasokListazas('Hello, én a Jó Biztosító vagyok, és nagyon jó vagyok');?>
                                 </select>
-                                <div id="szabaly-checkbox">
-                                    <label for="szabalyzat-elfogadas">
-                                        <input type="checkbox" id="szabalyzat-elfogadas" name="szabalyzat" required>
-                                        A biztosítás megkötésével elfogadom az irinyiutazasiiroda.hu szabályzatát.
-                                    </label> <br/>
-                                    <label for="18-felett">
-                                        <input type="checkbox" id="18-felett" name="szabalyzat" required>
-                                        Büntetőjogi felelősségem teljes tudatában kijelentem, hogy elmúltam 18 éves.
-                                    </label> <br/>
-                                </div>
                                 <input type="hidden" name="biztositoID-5" value="1005"/>
                                 <input type="submit" value="Megkötés" name="biztositas-5-kotes"/>
                             </div>
